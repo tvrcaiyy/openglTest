@@ -20,7 +20,7 @@
 // Other includes
 #include "Shader.h"
 #include "Camera.h"
-
+//#pragma comment(lib,"glew32.lib")
 // Window dimensions
 const GLuint screenWidth = 800, screenHeight = 600;
 // Holds uniform value of texture mix
