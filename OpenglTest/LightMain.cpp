@@ -1,7 +1,7 @@
 /*
 * 绘制10个立方体，并随着时间旋转
 */
-
+//#include "glad/glad.h"
 // Std.Includes
 #include <iostream>
 #include <string>
@@ -10,6 +10,7 @@
 #include <SOIL.h>
 // GLEW
 #define GLEW_STATIC
+#define GLFW_INCLUDE_NONE
 #include <GL/glew.h>
 // GLFW
 #include <GLFW/glfw3.h>
@@ -20,6 +21,7 @@
 // Other includes
 #include "Shader.h"
 #include "Camera.h"
+
 //#pragma comment(lib,"glew32.lib")
 // Window dimensions
 const GLuint screenWidth = 800, screenHeight = 600;
@@ -82,7 +84,7 @@ int main()
 	glfwSetScrollCallback (window, scroll_callback);
 
 	// GLFW Options
-	glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetInputMode (window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	//  let glew use a modern approach to retrieving function pointers and extensions
 	glewExperimental = GL_TRUE;

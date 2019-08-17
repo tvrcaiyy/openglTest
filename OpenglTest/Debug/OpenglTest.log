@@ -1,3 +1,12 @@
-﻿LINK : warning LNK4098: 默认库“MSVCRT”与其他库的使用冲突；请使用 /NODEFAULTLIB:library
-glew32s.lib(glew.obj) : warning LNK4099: 未找到 PDB“vc120.pdb”(使用“glew32s.lib(glew.obj)”或在“E:\project\opengl\LearnOpenGL\openglTest\Debug\vc120.pdb”中寻找)；正在链接对象，如同没有调试信息一样
+﻿  LightMain.cpp
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(203): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(216): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(217): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(311): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(312): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(316): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(317): warning C4244: “初始化”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(318): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(319): warning C4244: “=”: 从“double”转换到“GLfloat”，可能丢失数据
+e:\project\opengl\learnopengl\opengltest\opengltest\lightmain.cpp(326): warning C4244: “参数”: 从“double”转换到“GLfloat”，可能丢失数据
   OpenglTest.vcxproj -> E:\project\opengl\LearnOpenGL\openglTest\Debug\OpenglTest.exe
