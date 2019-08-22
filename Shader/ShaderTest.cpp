@@ -1,7 +1,7 @@
-/*
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
+#include "../ShaderManager.h"
 
 const unsigned int SRC_WIDTH = 800;
 const unsigned int SRC_HEIGHT = 600;
@@ -22,24 +22,11 @@ unsigned int indices[] = {
 	1,2,3
 };
 
-const char* vertexShaderSource = "#version 330 core\n"
-	"layout(location = 0) in vec3 Pos;\n"
-	"void main()\n"
-	"{\n"
-	"gl_Position = vec4(Pos.x,Pos.y,Pos.z,1.0);\n"
-	"}\n";
-const char* fragShaderSource = "#version 330 core\n"
-	"out vec4 FragColor;"
-	"void main()\n"
-	"{\n"
-	"FragColor = vec4(1.0,0,0,1.0);\n"
-	"}\n";
-
 int main()
 {
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	GLFWwindow* pWindow = glfwCreateWindow(SRC_WIDTH,SRC_HEIGHT,"HelloTriangle",NULL,NULL);
@@ -60,40 +47,8 @@ int main()
 
 	glfwSetFramebufferSizeCallback(pWindow,framebuffer_size_callback);
 
-	GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader,1,&vertexShaderSource,NULL);
-	glCompileShader(vertexShader);
-	GLint success;
-	char infoLog[512];
-	glGetShaderiv(vertexShader,GL_COMPILE_STATUS,&success);
-	if(!success)
-	{
-		glGetShaderInfoLog(vertexShader,512,NULL,infoLog);
-		std::cout << "Error: Vertex Shader Compile Failed:\n" << infoLog << std::endl;
-	}
-
-	GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragShader,1,&fragShaderSource,NULL);
-	glCompileShader(fragShader);
-	glGetShaderiv(fragShader,GL_COMPILE_STATUS,&success);
-	if(!success)
-	{
-		glGetShaderInfoLog(fragShader,512,NULL,infoLog);
-		std::cout << "Error: Frag Shader Compile Failed:\n" << infoLog << std::endl;
-	}
-
-	GLuint program = glCreateProgram();
-	glAttachShader(program,vertexShader);
-	glAttachShader(program,fragShader);
-	glLinkProgram(program);
-	glGetProgramiv(program,GL_LINK_STATUS,&success);
-	if(!success)
-	{
-		glGetProgramInfoLog(program,512,NULL,infoLog);
-		std::cout << "Error: Link Program Failed:\n" << infoLog << std::endl;
-	}
-	glDeleteShader(vertexShader);
-	glDeleteShader(fragShader);
+	//ShaderManager* pShaderManager = new ShaderManager("vertex.vs","fragment.fs");
+	ShaderManager pShaderManager ("vertex.vs","fragment.fs");
 
 	GLuint vao,vbo,ebo;
 	glGenVertexArrays(1,&vao);
@@ -124,7 +79,7 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		glUseProgram(program);
+		pShaderManager.use();
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
 
@@ -156,4 +111,4 @@ void processInput(GLFWwindow* pWindow)
 	{
 		glfwSetWindowShouldClose(pWindow,GL_TRUE);
 	}
-}*/
+}

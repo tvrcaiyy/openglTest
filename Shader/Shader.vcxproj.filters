@@ -15,14 +15,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ShaderTest.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="..\glad.c">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="HelloTriangle.cpp">
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ShaderManager.h">
       <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Practise.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
 </Project>
