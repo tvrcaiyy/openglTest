@@ -67,7 +67,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\OpenglLibrary\glad.c" />
     <ClCompile Include="ShaderTest.cpp" />
   </ItemGroup>
   <ItemGroup>

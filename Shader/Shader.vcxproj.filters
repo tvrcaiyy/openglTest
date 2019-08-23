@@ -18,9 +18,6 @@
     <ClCompile Include="ShaderTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\OpenglLibrary\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ShaderManager.h">
