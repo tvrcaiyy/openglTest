@@ -67,7 +67,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\glad.c" />
+    <ClCompile Include="..\..\..\OpenglLibrary\glad.c" />
     <ClCompile Include="HelloTriangle.cpp" />
     <ClCompile Include="Practise.cpp" />
   </ItemGroup>

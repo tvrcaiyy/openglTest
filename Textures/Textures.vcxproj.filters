@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="HelloTriangle.cpp">
+    <ClCompile Include="..\..\..\OpenglLibrary\stb_image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Practise.cpp">
+    <ClCompile Include="Textures.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\OpenglLibrary\glad.c">
