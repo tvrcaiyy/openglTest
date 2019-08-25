@@ -68,8 +68,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\OpenglLibrary\glad.c" />
-    <ClCompile Include="..\..\..\OpenglLibrary\stb_image.cpp" />
+    <ClCompile Include="..\..\..\OpenglLibrary\Include\std_image.cpp" />
     <ClCompile Include="Textures.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\OpenglLibrary\Include\stb_image.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment.fs" />
+    <None Include="vertex.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

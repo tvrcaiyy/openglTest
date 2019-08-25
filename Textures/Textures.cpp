@@ -3,9 +3,10 @@
 #include "stb_image.h"
 #include <iostream>
 #include "../ShaderManager.h"
+#include "glm/gtc/matrix_transform.inl"
 
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_HEIGHT = 800;
 
 void framebuffer_size_callback(GLFWwindow* pWindow, int width,int height);
 void processInput(GLFWwindow* pWindow);
@@ -132,10 +133,24 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
 		pShader.use();
+		glm::mat4 tran = glm::mat4(1.0);
+		tran = glm::rotate(tran,(float)(glfwGetTime() * 0.3f),glm::vec3(0.0,0.0,1.0f));
+		tran = glm::scale(tran,glm::vec3(0.5f,0.5f,0.5f));
+		tran = glm::translate(tran,glm::vec3(0.5f,-0.5f,0));
+		int tranformLocation = glGetUniformLocation(pShader.ID,"transform");
+		glUniformMatrix4fv(tranformLocation,1,GL_FALSE,glm::value_ptr(tran));
 		pShader.setFloat("mixValue",mixValue);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,(void*)0);
 
+		tran = glm::mat4(1.0f); // reset it to identity matrix
+		tran = glm::translate(tran, glm::vec3(-0.5f, 0.5f, 0.0f));
+		float scaleAmount = sin(glfwGetTime());
+		tran = glm::scale(tran, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
+		glUniformMatrix4fv(tranformLocation, 1, GL_FALSE, &tran[0][0]); // this time take the matrix value array's first element as its memory pointer value
+
+		// now with the uniform matrix being replaced with new transformations, draw it again.
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 		glfwPollEvents();
 		glfwSwapBuffers(pWindow);
