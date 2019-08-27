@@ -6,10 +6,12 @@ layout (location = 2) in vec2 TexCrood;
 out vec3 outColor;
 out vec2 outTexCrood;
 uniform mat4 transform;
+uniform mat4 view;
+uniform mat4 projection;
 
 void main()
 {
-	gl_Position = transform * vec4(Pos,1.0);
+	gl_Position = projection * view * transform * vec4(Pos,1.0);
 	outColor = Color;
 	outTexCrood = TexCrood;
 }

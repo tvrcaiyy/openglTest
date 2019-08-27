@@ -6,7 +6,7 @@
 #include "glm/gtc/matrix_transform.inl"
 
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 800;
+const unsigned int SCR_HEIGHT = 600;
 
 void framebuffer_size_callback(GLFWwindow* pWindow, int width,int height);
 void processInput(GLFWwindow* pWindow);
@@ -134,18 +134,24 @@ int main()
 
 		pShader.use();
 		glm::mat4 tran = glm::mat4(1.0);
-		tran = glm::rotate(tran,(float)(glfwGetTime() * 0.3f),glm::vec3(0.0,0.0,1.0f));
+		//tran = glm::rotate(tran,(float)(glfwGetTime() * 0.3f),glm::vec3(0.0,0.0,1.0f));
 		tran = glm::scale(tran,glm::vec3(0.5f,0.5f,0.5f));
 		tran = glm::translate(tran,glm::vec3(0.5f,-0.5f,0));
 		int tranformLocation = glGetUniformLocation(pShader.ID,"transform");
 		glUniformMatrix4fv(tranformLocation,1,GL_FALSE,glm::value_ptr(tran));
 		pShader.setFloat("mixValue",mixValue);
+		glm::mat4 view = glm::mat4(1.0f);
+		view = glm::translate(view,glm::vec3(0.0f,0.0f,-3.0f));
+		glm::mat4 projection = glm::mat4(1.0f);
+		projection = glm::perspective(glm::radians(45.0f),(float)SCR_WIDTH / SCR_HEIGHT,0.1f,100.0f);
+		pShader.setMat4("view",view);
+		pShader.setMat4("projection",projection);
 		glBindVertexArray(VAO);
 		glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,(void*)0);
 
 		tran = glm::mat4(1.0f); // reset it to identity matrix
 		tran = glm::translate(tran, glm::vec3(-0.5f, 0.5f, 0.0f));
-		float scaleAmount = sin(glfwGetTime());
+		double scaleAmount = sin(glfwGetTime());
 		tran = glm::scale(tran, glm::vec3(scaleAmount, scaleAmount, scaleAmount));
 		glUniformMatrix4fv(tranformLocation, 1, GL_FALSE, &tran[0][0]); // this time take the matrix value array's first element as its memory pointer value
 

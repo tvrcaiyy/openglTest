@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F0663F10-CE43-4062-9D2A-6768A361A412}</ProjectGuid>
-    <RootNamespace>Textures</RootNamespace>
+    <ProjectGuid>{F60B84ED-C87D-4FD1-A87A-F980D5E51CC0}</ProjectGuid>
+    <RootNamespace>CoordinateAndCamera</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -44,11 +44,11 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\OpenglLibrary\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\project\opengl\OpenglLibrary\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\OpenglLibrary\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>E:\project\opengl\OpenglLibrary\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenGL32.lib;glfw3.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -69,14 +69,15 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\OpenglLibrary\glad.c" />
     <ClCompile Include="..\..\..\OpenglLibrary\std_image.cpp" />
-    <ClCompile Include="Textures.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\OpenglLibrary\Include\stb_image.h" />
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Coordinate.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment.fs" />
     <None Include="vertex.vs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\CameraManager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

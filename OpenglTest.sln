@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shader", "Shader\Shader.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Textures", "Textures\Textures.vcxproj", "{F0663F10-CE43-4062-9D2A-6768A361A412}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoordinateAndCamera", "CoordinateAndCamera\CoordinateAndCamera.vcxproj", "{F60B84ED-C87D-4FD1-A87A-F980D5E51CC0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -37,6 +39,10 @@ Global
 		{F0663F10-CE43-4062-9D2A-6768A361A412}.Debug|Win32.Build.0 = Debug|Win32
 		{F0663F10-CE43-4062-9D2A-6768A361A412}.Release|Win32.ActiveCfg = Release|Win32
 		{F0663F10-CE43-4062-9D2A-6768A361A412}.Release|Win32.Build.0 = Release|Win32
+		{F60B84ED-C87D-4FD1-A87A-F980D5E51CC0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F60B84ED-C87D-4FD1-A87A-F980D5E51CC0}.Debug|Win32.Build.0 = Debug|Win32
+		{F60B84ED-C87D-4FD1-A87A-F980D5E51CC0}.Release|Win32.ActiveCfg = Release|Win32
+		{F60B84ED-C87D-4FD1-A87A-F980D5E51CC0}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
