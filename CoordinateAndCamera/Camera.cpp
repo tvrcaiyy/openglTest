@@ -85,7 +85,7 @@ float deltaTime = 0.0f;
 float lastFrameTime = 0.0f;
 float lastPosx = SCR_WIDTH / 2;
 float lastPosy = SCR_HEIGHT / 2;
-CameraManager camera = CameraManager(glm::vec3(0.0f,2.0f,10.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f));
+CameraManager camera = CameraManager(glm::vec3(0.0f,0.0f,10.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f));
 
 int main()
 {
@@ -292,10 +292,6 @@ void mouse_button_callback(GLFWwindow* pWindow,int button, int action, int mods)
 	switch(button)
 	{
 	case GLFW_MOUSE_BUTTON_LEFT:
-		break;
-	case GLFW_MOUSE_BUTTON_MIDDLE:
-		break;
-	case GLFW_MOUSE_BUTTON_RIGHT:
 		{
 			if (action == GLFW_PRESS)
 			{
@@ -304,6 +300,20 @@ void mouse_button_callback(GLFWwindow* pWindow,int button, int action, int mods)
 			else if(action == GLFW_RELEASE)
 			{
 				camera.bMove = false;
+			}
+		}
+		break;
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		break;
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		{
+			if (action == GLFW_PRESS)
+			{
+				camera.bRotate = true;
+			}
+			else if(action == GLFW_RELEASE)
+			{
+				camera.bRotate = false;
 			}
 		}
 		break;

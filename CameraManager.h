@@ -24,6 +24,7 @@ class CameraManager
 public:
 	float Zoom;
 	glm::vec3 Position;
+	bool bRotate;
 	bool bMove;
 	CameraManager(glm::vec3 cameraPos,glm::vec3 lookPos,glm::vec3 worldUp,E_CameraType cameraType = SLG):Zoom(45.0f)
 	{
@@ -38,6 +39,11 @@ public:
 		m_yaw = -90.0f;
 		m_cameraType = cameraType;
 		m_distance = glm::distance(Position,m_lookPos);
+
+		if (m_pitch == 0.0f)
+			m_horizenFront = m_worldUp;
+		else
+			m_horizenFront = glm::normalize(glm::cross(worldUp,m_right));
 	}
 
 	glm::mat4 GetLookAt()
@@ -75,7 +81,27 @@ public:
 		}
 		else
 		{
-
+			switch (moveType)
+			{
+			case CameraMoveForward:
+				Position += m_horizenFront * cameraMoveSpeed * deltaTime;
+				m_lookPos += m_horizenFront * cameraMoveSpeed * deltaTime;
+				break;
+			case CameraMoveBackward:
+				Position -= m_horizenFront * cameraMoveSpeed * deltaTime;
+				m_lookPos -= m_horizenFront * cameraMoveSpeed * deltaTime;
+				break;
+			case CameraMoveLeft:
+				Position -= m_right * cameraMoveSpeed * deltaTime;
+				m_lookPos -= m_right * cameraMoveSpeed * deltaTime;
+				break;
+			case CameraMoveRight:
+				Position += m_right * cameraMoveSpeed * deltaTime;
+				m_lookPos += m_right * cameraMoveSpeed * deltaTime;
+				break;
+			default:
+				break;
+			}
 		}
 		
 		m_distance = glm::distance(Position,m_lookPos);
@@ -100,7 +126,7 @@ public:
 		}
 		else
 		{
-			if(bMove)
+			if(bRotate)
 			{
 				m_pitch += offsety;
 				m_yaw += offsetx;
@@ -112,6 +138,16 @@ public:
 						m_pitch = -89.0f;
 				}
 				updateCameraVectors();
+				if (m_pitch == 0.0f)
+					m_horizenFront = m_worldUp;
+			}
+			else if (bMove)
+			{
+				Position -= m_right * offsetx * 0.1f;
+				m_lookPos -= m_right * offsetx * 0.1f;
+				
+				Position -= m_horizenFront * offsety * 0.1f;
+				m_lookPos -= m_horizenFront * offsety * 0.1f;
 			}
 		}
 	}
@@ -133,6 +169,7 @@ private:
 	glm::vec3 m_front;
 	glm::vec3 m_up;
 	glm::vec3 m_right;
+	glm::vec3 m_horizenFront;
 	float m_pitch;
 	float m_yaw;
 	E_CameraType m_cameraType;
@@ -140,27 +177,18 @@ private:
 
 	void updateCameraVectors()
 	{
-		if (m_cameraType == FPS)
-		{
-			glm::vec3 front;
-			front.y = sin(glm::radians(m_pitch));
-			front.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
-			front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
-			m_front = glm::normalize(front);
-			m_right = glm::normalize(glm::cross(m_front,m_worldUp));
-			m_up = glm::normalize(glm::cross(m_right,m_front));
-		}
-		else if (m_cameraType == SLG)
-		{
-			glm::vec3 front;
-			front.y = sin(glm::radians(m_pitch));
-			front.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
-			front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
-			m_front = glm::normalize(front);
+		glm::vec3 front;
+		front.y = sin(glm::radians(m_pitch));
+		front.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
+		front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
+		m_front = glm::normalize(front);
+		m_right = glm::normalize(glm::cross(m_front,m_worldUp));
+		m_up = glm::normalize(glm::cross(m_right,m_front));
+		m_horizenFront = glm::normalize(glm::cross(m_worldUp,m_right));
 
+		if (m_cameraType == SLG)
+		{
 			Position = m_lookPos - (front * m_distance);
-			m_right = glm::normalize(glm::cross(m_front,m_worldUp));
-			m_up = glm::normalize(glm::cross(m_right,m_front));
 		}
 	}
 
