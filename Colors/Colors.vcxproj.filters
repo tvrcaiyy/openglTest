@@ -32,5 +32,11 @@
     <None Include="vertex.vs">
       <Filter>源文件</Filter>
     </None>
+    <None Include="LightFragment.fs">
+      <Filter>源文件</Filter>
+    </None>
+    <None Include="LightVertex.vs">
+      <Filter>源文件</Filter>
+    </None>
   </ItemGroup>
 </Project>
