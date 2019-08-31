@@ -132,8 +132,8 @@ public:
 				m_yaw += offsetx;
 				if (constrainPitch)
 				{
-					if (m_pitch > 0.0f)
-						m_pitch = 0.0f;
+					if (m_pitch > 89.0f)
+						m_pitch = 89.0f;
 					else if (m_pitch < -89.0f)
 						m_pitch = -89.0f;
 				}

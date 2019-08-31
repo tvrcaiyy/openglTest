@@ -145,8 +145,8 @@ int main()
 		//Render
 		glClearColor(0.33f,0.33f,0.33f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		float camx = sin(glfwGetTime()) * 2;
-		float camz = cos(glfwGetTime()) * 2;
+		float camx = 2.0f;//sin(glfwGetTime()) * 2;
+		float camz = 2.0f;//cos(glfwGetTime()) * 2;
 		pShader.use();
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
@@ -161,6 +161,20 @@ int main()
 		pShader.setVec3("lightColor",1.0f,1.0f,1.0f);
 		pShader.setVec3("LightPosition",camx, 0.0f, camz);
 		pShader.setVec3("viewPos",pCamera.Position);
+		pShader.setVec3("material.ambient",  1.0f, 0.5f, 0.31f);
+		pShader.setVec3("material.diffuse",  1.0f, 0.5f, 0.31f);
+		pShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+		pShader.setFloat("material.shininess", 32.0f);
+
+		glm::vec3 lightColor;
+		lightColor.x = sin(glfwGetTime() * 2.0f);
+		lightColor.y = sin(glfwGetTime() * 0.7f);
+		lightColor.z = sin(glfwGetTime() * 1.3f);
+		glm::vec3 diffuseColor = lightColor   * glm::vec3(0.5f); // 降低影响
+		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.2f); // 很低的影响
+		pShader.setVec3("light.ambient",  ambientColor);
+		pShader.setVec3("light.diffuse",  diffuseColor); // 将光照调暗了一些以搭配场景
+		pShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f); 
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES,0,36);
 		//------------------------------------------------------
