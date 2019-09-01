@@ -53,6 +53,19 @@ float vertices[] = {
 	-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
 
+glm::vec3 cubePositions[] = {
+	glm::vec3( 0.0f,  0.0f,  0.0f),
+	glm::vec3( 2.0f,  5.0f, -15.0f),
+	glm::vec3(-1.5f, -2.2f, -2.5f),
+	glm::vec3(-3.8f, -2.0f, -12.3f),
+	glm::vec3( 2.4f, -0.4f, -3.5f),
+	glm::vec3(-1.7f,  3.0f, -7.5f),
+	glm::vec3( 1.3f, -2.0f, -2.5f),
+	glm::vec3( 1.5f,  2.0f, -2.5f),
+	glm::vec3( 1.5f,  0.2f, -1.5f),
+	glm::vec3(-1.3f,  1.0f, -1.5f)
+};
+
 void processInput(GLFWwindow* pWindow);
 void mouseMove_callback(GLFWwindow* pWindow,double posx,double posy);
 void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods);
@@ -73,7 +86,7 @@ int main()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,5);
 	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-	
+
 	GLFWwindow* pWindow = glfwCreateWindow(SCR_WIDTH,SCR_HEIGHT,"Lighting Map",NULL,NULL);
 	if(!pWindow)
 	{
@@ -122,28 +135,30 @@ int main()
 	glBindVertexArray(0);
 
 	unsigned int texture1 = loadTexture("../resource/textures/container2.png");
-	unsigned int texture2 = loadTexture("../resource/textures/lighting_maps_specular_color.png");
-	unsigned int texture3 = loadTexture("../resource/textures/matrix.jpg");
-	
+	unsigned int texture2 = loadTexture("../resource/textures/container2_specular.png");
+
 	ShaderManager pShader("vertex.vs","fragment.fs");
 	pShader.use();
 	glUniform1i(glGetUniformLocation(pShader.ID,"texture1"),0);
 	// material properties
 	pShader.setInt("material.diffuse",  0);
 	pShader.setInt("material.specular", 1);
-	pShader.setInt("material.emission", 2);
 	pShader.setFloat("material.shininess", 64.0f);
 	// light properties
 	pShader.setVec3("light.ambient", 0.2f, 0.2f, 0.2f); 
 	pShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);
 	pShader.setVec3("light.specular", 1.0f, 1.0f, 1.0f);
 	pShader.setVec3("light.position",lightPos);
+	//pShader.setVec3("light.direction", -0.2f, -1.0f, -0.3f);
+	pShader.setFloat("light.constant",  1.0f);
+	pShader.setFloat("light.linear",    0.14f);
+	pShader.setFloat("light.quadratic", 0.07f);
 
 
 	ShaderManager pLightShader("lightVertex.vs","lightFragment.fs");
 
 	glEnable(GL_DEPTH_TEST);
-	
+
 	while (!glfwWindowShouldClose(pWindow))
 	{
 		float currentTime = glfwGetTime();
@@ -155,33 +170,39 @@ int main()
 		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
- 		glActiveTexture(GL_TEXTURE0);
- 		glBindTexture(GL_TEXTURE_2D, texture1);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D, texture3);
 
 		pShader.use();
 
-		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = glm::mat4(1.0f);
 		view = pCamera.GetLookAt();
 		glm::mat4 projection = glm::mat4(1.0f);
 		projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH / (float)SCR_HEIGHT,0.1f,100.0f);
-		pShader.setMat4("model",model);
 		pShader.setMat4("view",view);
 		pShader.setMat4("projection",projection);
-
-		pShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
 		pShader.setVec3("viewPos",pCamera.Position);
+
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES,0,36);
+		for (int i = 0; i < 10;i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model,glm::vec3(cubePositions[i]));
+			model = glm::rotate(model,glm::radians(i * 20.0f),glm::vec3(1.0f, 0.3f, 0.5f));
+			pShader.setMat4("model",model);
+			pShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
+			
+			glDrawArrays(GL_TRIANGLES,0,36);
+		}
+		
 
 		pLightShader.use();
-		model = glm::translate(model,lightPos);
-		model = glm::scale(model,glm::vec3(0.2f,0.2f,0.2f));
-		pLightShader.setMat4("model",model);
+		glm::mat4 lightModel(1.0f);
+		lightModel = glm::translate(lightModel,lightPos);
+		lightModel = glm::scale(lightModel,glm::vec3(0.2f,0.2f,0.2f));
+		pLightShader.setMat4("model",lightModel);
 		pLightShader.setMat4("view",view);
 		pLightShader.setMat4("projection",projection);
 		glBindVertexArray(lightVAO);
@@ -291,7 +312,7 @@ unsigned int loadTexture(char const* path)
 
 		glTexImage2D(GL_TEXTURE_2D,0,format,imageWidth,imageHeight,0,format,GL_UNSIGNED_BYTE,imageData);
 		glGenerateMipmap(GL_TEXTURE_2D);
-		
+
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
