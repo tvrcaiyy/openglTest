@@ -23,6 +23,7 @@ class CameraManager
 {
 public:
 	float Zoom;
+	glm::vec3 Front;
 	glm::vec3 Position;
 	bool bRotate;
 	bool bMove;
@@ -32,9 +33,9 @@ public:
 		m_lookPos = lookPos;
 		m_worldUp = worldUp;
 
-		m_front = glm::normalize(lookPos - cameraPos);
-		m_right = glm::normalize(glm::cross(m_front,worldUp));
-		m_up = glm::normalize(glm::cross(m_right,m_front));
+		Front = glm::normalize(lookPos - cameraPos);
+		m_right = glm::normalize(glm::cross(Front,worldUp));
+		m_up = glm::normalize(glm::cross(m_right,Front));
 		m_pitch = 0.0f;
 		m_yaw = -90.0f;
 		m_cameraType = cameraType;
@@ -50,8 +51,8 @@ public:
 	{
 		if (m_cameraType == FPS)
 		{
-			//return getLookAtMatrix(Position,Position + m_front,m_worldUp);
-			return glm::lookAt(Position,Position + m_front,m_worldUp);
+			//return getLookAtMatrix(Position,Position + Front,m_worldUp);
+			return glm::lookAt(Position,Position + Front,m_worldUp);
 		}
 		else
 			return getLookAtMatrix(Position,m_lookPos,m_worldUp);
@@ -64,10 +65,10 @@ public:
 			switch (moveType)
 			{
 			case CameraMoveForward:
-				Position += m_front * cameraMoveSpeed * deltaTime;
+				Position += Front * cameraMoveSpeed * deltaTime;
 				break;
 			case CameraMoveBackward:
-				Position -= m_front * cameraMoveSpeed * deltaTime;
+				Position -= Front * cameraMoveSpeed * deltaTime;
 				break;
 			case CameraMoveLeft:
 				Position -= m_right * cameraMoveSpeed * deltaTime;
@@ -166,7 +167,6 @@ public:
 private:
 	glm::vec3 m_lookPos;
 	glm::vec3 m_worldUp;
-	glm::vec3 m_front;
 	glm::vec3 m_up;
 	glm::vec3 m_right;
 	glm::vec3 m_horizenFront;
@@ -181,9 +181,9 @@ private:
 		front.y = sin(glm::radians(m_pitch));
 		front.x = cos(glm::radians(m_pitch)) * cos(glm::radians(m_yaw));
 		front.z = cos(glm::radians(m_pitch)) * sin(glm::radians(m_yaw));
-		m_front = glm::normalize(front);
-		m_right = glm::normalize(glm::cross(m_front,m_worldUp));
-		m_up = glm::normalize(glm::cross(m_right,m_front));
+		Front = glm::normalize(front);
+		m_right = glm::normalize(glm::cross(Front,m_worldUp));
+		m_up = glm::normalize(glm::cross(m_right,Front));
 		m_horizenFront = glm::normalize(glm::cross(m_worldUp,m_right));
 
 		if (m_cameraType == SLG)
