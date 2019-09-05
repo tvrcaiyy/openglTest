@@ -90,8 +90,9 @@ uniform Material material;
 //        float diff = max(dot(lightDir,normal),0);
 //        vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse,Texcoord));
 //
+//        vec3 viewDir = normalize(viewPos - FragPos);
 //        vec3 reflect = reflect(-lightDir,normal);
-//        float spec = pow(max(dot(reflect,normal),0.0f),material.shininess);
+//        float spec = pow(max(dot(reflect,viewDir),0.0f),material.shininess);
 //        vec3 specular = light.specular * spec * vec3(texture(material.specular,Texcoord));
 //
 //        float distance = distance(light.position,FragPos);
@@ -119,8 +120,9 @@ void main()
     float diff = max(dot(lightDir,normal),0.0f);
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse,Texcoord).rgb);
 
+    vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflect = reflect(-lightDir,normal);
-    float spec = pow(max(dot(reflect,normal),0.0f),material.shininess);
+    float spec = pow(max(dot(reflect,viewDir),0.0f),material.shininess);
     vec3 specular = light.specular * spec * vec3(texture(material.specular,Texcoord).rgb);
 
     float theta = dot(-lightDir,light.direction);
@@ -130,7 +132,7 @@ void main()
     diffuse *= intensity;
     specular *= intensity;
 
-    float distance = distance(light.position, FragPos);
+    float distance = length(light.position - FragPos);
     float attenuation = 1.0f/(light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
     ambient *= attenuation;
