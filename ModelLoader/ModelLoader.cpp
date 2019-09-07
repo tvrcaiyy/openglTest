@@ -51,7 +51,7 @@ int main()
 	ShaderManager ourShader("vertex.vs", "fragment.fs");
 	Model ourModel("../resource/objects/nanosuit/nanosuit.obj");
 	glEnable(GL_DEPTH_TEST);
-	glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	while (!glfwWindowShouldClose(pWindow))
 	{
 		deltaTime = glfwGetTime() - lastTIme;
