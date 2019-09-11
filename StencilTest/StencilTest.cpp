@@ -1,3 +1,4 @@
+/*
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <iostream>
@@ -54,18 +55,25 @@ int main()
 	glfwSetMouseButtonCallback(pWindow,mouseButton_callback);
 	glfwSetScrollCallback(pWindow,mouseScroll_callback);
 
-	ShaderManager ourShader("vertex.vs", "fragment.fs");
+	ShaderManager ourShader("shaders/vertex.vs", "shaders/fragment.fs");
+	ShaderManager outGlowShader("shaders/OuterGlowVertex.vs", "shaders/OuterGlowFragment.fs");
 	Model ourModel("../resource/objects/nanosuit/nanosuit.obj");
+
 	glEnable(GL_DEPTH_TEST);
-	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_KEEP,GL_KEEP,GL_REPLACE);
+	float scale = 1.05f;
 	while (!glfwWindowShouldClose(pWindow))
 	{
 		deltaTime = glfwGetTime() - lastTIme;
 		lastTIme = glfwGetTime();
 		processInput(pWindow);
 
+		glStencilFunc(GL_ALWAYS,1,0xff);
+		glStencilMask(0xff);
+
 		glClearColor(0.33f,0.33f,0.33f,1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 		// don't forget to enable shader before setting uniforms
 		ourShader.use();
 
@@ -82,6 +90,21 @@ int main()
 		ourShader.setMat4("model", model);
 		ourModel.Draw(ourShader);
 
+		//out glow
+		glStencilFunc(GL_NOTEQUAL,1,0xff);
+		glStencilMask(0x0);
+		glDisable(GL_DEPTH_TEST);
+		outGlowShader.use();
+		outGlowShader.setMat4("projection", projection);
+		outGlowShader.setMat4("view", view);
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, -1.75f * scale, 0.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.2f, 0.2f, 0.2f) * scale);	// it's a bit too big for our scene, so scale it down
+		outGlowShader.setMat4("model", model);
+		ourModel.Draw(outGlowShader);
+
+		glStencilMask(0xff);
+		glEnable(GL_DEPTH_TEST);
 
 		glfwPollEvents();
 		glfwSwapBuffers(pWindow);
@@ -156,4 +179,4 @@ void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods)
 	case GLFW_MOUSE_BUTTON_MIDDLE:
 		break;
 	}
-}
+}*/

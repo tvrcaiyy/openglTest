@@ -184,6 +184,8 @@ int main()
 	glUniform1i(glGetUniformLocation(pShader.ID,"texture2"),1);
 
 	glEnable(GL_DEPTH_TEST);
+	//glDepthMask(GL_FALSE);
+	//glDepthFunc(GL_ALWAYS); // always pass the depth test (same effect as glDisable(GL_DEPTH_TEST))
 	while (!glfwWindowShouldClose(pWindow))
 	{
 		float currentTime = glfwGetTime();

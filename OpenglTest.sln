@@ -23,6 +23,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MultipleLights", "MultipleL
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelLoader", "ModelLoader\ModelLoader.vcxproj", "{B8C6EC40-10C6-4ED3-BCD2-9D01B933B595}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StencilTest", "StencilTest\StencilTest.vcxproj", "{DDEA523C-7DE7-410D-A74E-70A7E4727838}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -73,6 +75,10 @@ Global
 		{B8C6EC40-10C6-4ED3-BCD2-9D01B933B595}.Debug|Win32.Build.0 = Debug|Win32
 		{B8C6EC40-10C6-4ED3-BCD2-9D01B933B595}.Release|Win32.ActiveCfg = Release|Win32
 		{B8C6EC40-10C6-4ED3-BCD2-9D01B933B595}.Release|Win32.Build.0 = Release|Win32
+		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Debug|Win32.ActiveCfg = Debug|Win32
+		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Debug|Win32.Build.0 = Debug|Win32
+		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Release|Win32.ActiveCfg = Release|Win32
+		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

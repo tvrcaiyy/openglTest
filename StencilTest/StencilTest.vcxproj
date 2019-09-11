@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{B8C6EC40-10C6-4ED3-BCD2-9D01B933B595}</ProjectGuid>
-    <RootNamespace>ModelLoader</RootNamespace>
+    <ProjectGuid>{DDEA523C-7DE7-410D-A74E-70A7E4727838}</ProjectGuid>
+    <RootNamespace>StencilTest</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -38,20 +38,17 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)\..\..\..\..\OpenglLibrary\Libs</OutDir>
-    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
-  </PropertyGroup>
+  <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>../../../OpenglLibrary/Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\..\OpenglLibrary\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../OpenglLibrary/Libs;E:\project\opengl\LearnOpenGL;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\OpenglLibrary\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenGL32.lib;glfw3.lib;glew32s.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <DelayLoadDLLs>assimp-vc140-mt.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
@@ -79,11 +76,9 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\OpenglLibrary\glad.c" />
     <ClCompile Include="..\..\..\OpenglLibrary\std_image.cpp" />
-    <ClCompile Include="ModelLoader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="fragment.fs" />
-    <None Include="vertex.vs" />
+    <ClCompile Include="Blending.cpp" />
+    <ClCompile Include="Framebuffers.cpp" />
+    <ClCompile Include="StencilTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
