@@ -1,11 +1,17 @@
-#version 330 core
+#version 450 core
+
 out vec4 FragColor;
 
-in vec2 TexCoords;
+in vec3 Normal;
+in vec3 FragPos;
 
-uniform sampler2D texture1;
+uniform samplerCube texture1;
+uniform vec3 viewPos;
 
 void main()
 {    
-    FragColor = texture(texture1, TexCoords);
+    vec3 viewDir = normalize(FragPos - viewPos);
+    vec3 reflectDir = reflect(viewDir,normalize(Normal));
+
+    FragColor = texture(texture1, reflectDir);
 }
