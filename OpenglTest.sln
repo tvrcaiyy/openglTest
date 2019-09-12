@@ -25,6 +25,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModelLoader", "ModelLoader\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StencilTest", "StencilTest\StencilTest.vcxproj", "{DDEA523C-7DE7-410D-A74E-70A7E4727838}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cubemaps", "Cubemaps\Cubemaps.vcxproj", "{FB8551DA-4D4D-4323-96A7-A320EA90656B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -79,6 +81,10 @@ Global
 		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Debug|Win32.Build.0 = Debug|Win32
 		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Release|Win32.ActiveCfg = Release|Win32
 		{DDEA523C-7DE7-410D-A74E-70A7E4727838}.Release|Win32.Build.0 = Release|Win32
+		{FB8551DA-4D4D-4323-96A7-A320EA90656B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FB8551DA-4D4D-4323-96A7-A320EA90656B}.Debug|Win32.Build.0 = Debug|Win32
+		{FB8551DA-4D4D-4323-96A7-A320EA90656B}.Release|Win32.ActiveCfg = Release|Win32
+		{FB8551DA-4D4D-4323-96A7-A320EA90656B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

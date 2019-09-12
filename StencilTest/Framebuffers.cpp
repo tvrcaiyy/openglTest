@@ -243,7 +243,7 @@ int main()
 		processInput(pWindow);
 
 		//first pass:render scene to frame buffer
-		glBindFramebuffer(GL_FRAMEBUFFER,frameBuffer);
+		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		// render
 		// ------
 		glEnable(GL_DEPTH_TEST);
@@ -278,7 +278,7 @@ int main()
 		//second pass: rander frame buffer to screenTexture
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		glDisable(GL_DEPTH_TEST);
-
+		
 		glClearColor(1.0f,1.0f,1.0f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 		pScreenShader.use();
