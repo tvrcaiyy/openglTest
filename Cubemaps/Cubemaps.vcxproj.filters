@@ -36,5 +36,7 @@
   <ItemGroup>
     <None Include="shaders\skyboxFragment.fs" />
     <None Include="shaders\skyboxVertex.vs" />
+    <None Include="shaders\cubeFragment.fs" />
+    <None Include="shaders\cubeVertex.vs" />
   </ItemGroup>
 </Project>

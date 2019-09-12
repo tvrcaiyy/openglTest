@@ -75,6 +75,8 @@
     <ClCompile Include="Cubemaps.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\cubeFragment.fs" />
+    <None Include="shaders\cubeVertex.vs" />
     <None Include="shaders\skyboxFragment.fs" />
     <None Include="shaders\skyboxVertex.vs" />
   </ItemGroup>

@@ -69,6 +69,18 @@ float cubeVertices[] = {
 	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
 	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
+float planeVertices[] = {
+	// positions          // texture Coords (note we set these higher than 1 (together with GL_REPEAT as texture wrapping mode). this will cause the floor texture to repeat)
+	5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+	-5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
+
+
+	5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
+	5.0f, -0.5f, -5.0f,  2.0f, 2.0f,
+	-5.0f, -0.5f, -5.0f,  0.0f, 2.0f
+
+};
 
 float skyboxVertices[] = {
 	// positions          
@@ -121,8 +133,8 @@ int main()
 	//SetDllDirectory(path.c_str());
 
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,5);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
 	GLFWwindow* pWindow = glfwCreateWindow(SCR_WIDTH,SCR_HEIGHT,"Cube Map !",NULL,NULL);
 	if (!pWindow)
@@ -145,6 +157,29 @@ int main()
 	glfwSetMouseButtonCallback(pWindow,mouseButton_callback);
 	glfwSetScrollCallback(pWindow,mouseScroll_callback);
 
+	unsigned int planeVAO,planeVBO;
+	glGenVertexArrays(1,&planeVAO);
+	glGenBuffers(1,&planeVBO);
+	glBindVertexArray(planeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER,planeVBO);
+	glBufferData(GL_ARRAY_BUFFER,sizeof(planeVertices),planeVertices,GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),(void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),(void*)(3*sizeof(GL_FLOAT)));
+	glBindVertexArray(0);
+	// cube VAO
+	unsigned int cubeVAO, cubeVBO;
+	glGenVertexArrays(1, &cubeVAO);
+	glGenBuffers(1, &cubeVBO);
+	glBindVertexArray(cubeVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), &cubeVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
 	unsigned int skyboxVAO,skyboxVBO;
 	glGenVertexArrays(1,&skyboxVAO);
 	glGenBuffers(1,&skyboxVBO);
@@ -158,19 +193,24 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindVertexArray(0);
 
+	unsigned int cubeTexture = loadTexture("../resource/textures/container.jpg");
+	unsigned int floorTexture = loadTexture("../resource/textures/marbel.jpg");
+
 	vector<std::string> faces;
 	faces.push_back("../resource/textures/skybox/right.jpg");
 	faces.push_back("../resource/textures/skybox/left.jpg");
 	faces.push_back("../resource/textures/skybox/top.jpg");
 	faces.push_back("../resource/textures/skybox/bottom.jpg");
-	faces.push_back("../resource/textures/skybox/back.jpg");
 	faces.push_back("../resource/textures/skybox/front.jpg");
+	faces.push_back("../resource/textures/skybox/back.jpg");
 	unsigned int cubemapTexture = loadCubemap(faces);
 
+	ShaderManager pCubeShader("shaders/cubeVertex.vs", "shaders/cubeFragment.fs");
 	ShaderManager pSkyShader("shaders/skyboxVertex.vs", "shaders/skyboxFragment.fs");
 	pSkyShader.use();
-	pSkyShader.setInt("skyboxTexture",0);
-	
+	pSkyShader.setInt("skybox",0);
+	pCubeShader.use();
+	pCubeShader.setInt("texture1",0);
 	
 	//ShaderManager ourShader("vertex.vs", "fragment.fs");
 	//Model ourModel("../resource/objects/nanosuit/nanosuit.obj");
@@ -185,15 +225,37 @@ int main()
 		glClearColor(0.33f,0.33f,0.33f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		
-		pSkyShader.use();
+		// draw scene as normal
+		pCubeShader.use();
+		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = pCamera.GetLookAt();
-		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,0.1f,100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		pCubeShader.setMat4("model", model);
+		pCubeShader.setMat4("view", view);
+		pCubeShader.setMat4("projection", projection);
+		// cubes
+		glBindVertexArray(cubeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, cubeTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
+		// floor
+		glBindVertexArray(planeVAO);
+		glBindTexture(GL_TEXTURE_2D, floorTexture);
+		pCubeShader.setMat4("model", glm::mat4(1.0f));
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+
+		glBindVertexArray(0);
+		glDepthFunc(GL_LEQUAL);
+		pSkyShader.use();
+		view = glm::mat4(glm::mat3(pCamera.GetLookAt()));
 		pSkyShader.setMat4("view",view);
 		pSkyShader.setMat4("projection",projection);
+		glBindVertexArray(skyboxVAO);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_CUBE_MAP,cubemapTexture);
-		glBindVertexArray(skyboxVAO);
 		glDrawArrays(GL_TRIANGLES,0,36);
+		glDepthFunc(GL_LESS);
 
 		glfwPollEvents();
 		glfwSwapBuffers(pWindow);
@@ -330,7 +392,7 @@ unsigned int loadCubemap(vector<std::string> faces)
 			format = GL_RGBA;
 		if(data)
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,GL_RGB,width,height,0,GL_RGB,GL_UNSIGNED_BYTE,data);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,format,width,height,0,format,GL_UNSIGNED_BYTE,data);
 			stbi_image_free(data);
 		}
 		else
@@ -340,10 +402,10 @@ unsigned int loadCubemap(vector<std::string> faces)
 		}
 	}
 
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	glTextureParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
 	return cubemapTexture;
 }
