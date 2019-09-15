@@ -50,6 +50,7 @@ public:
 		unsigned int specularNr = 1;
 		unsigned int normalNr = 1;
 		unsigned int heightNr = 1;
+		unsigned int reflectNr = 1;
 
 		for (int i = 0;i < textures.size();i++)
 		{
@@ -66,6 +67,8 @@ public:
 				number = to_string(normalNr++);
 			else if (name == "texture_height")
 				number = to_string(heightNr++);
+			else if (name == "texture_reflect")
+				number = to_string(reflectNr++);
 			pShader.setInt((name + number).c_str(),i);
 		}
 		//draw mesh

@@ -45,4 +45,14 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\blendingFragment.fs" />
+    <None Include="shaders\blendingVertex.vs" />
+    <None Include="shaders\fragment.fs" />
+    <None Include="shaders\frameBufferFragment.fs" />
+    <None Include="shaders\frameBufferVertex.vs" />
+    <None Include="shaders\OuterGlowFragment.fs" />
+    <None Include="shaders\OuterGlowVertex.vs" />
+    <None Include="shaders\vertex.vs" />
+  </ItemGroup>
 </Project>

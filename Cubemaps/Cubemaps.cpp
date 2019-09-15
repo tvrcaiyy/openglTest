@@ -128,8 +128,8 @@ float skyboxVertices[] = {
 
 int main()
 {
-	//string path = "..\\";
-	//SetDllDirectory(path.c_str());
+	string path = "..\\";
+	SetDllDirectory(path.c_str());
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
@@ -205,14 +205,45 @@ int main()
 	unsigned int cubemapTexture = loadCubemap(faces);
 
 	ShaderManager pCubeShader("shaders/cubeVertex.vs", "shaders/cubeFragment.fs");
+	ShaderManager pModelShader("shaders/modelVertex.vs", "shaders/modelFragment.fs");
 	ShaderManager pSkyShader("shaders/skyboxVertex.vs", "shaders/skyboxFragment.fs");
 	pSkyShader.use();
 	pSkyShader.setInt("skybox",0);
 	pCubeShader.use();
 	pCubeShader.setInt("texture1",0);
+	pModelShader.use();
+	pModelShader.setInt("texture1",4);
+
+	unsigned int fbo;
+	glGenFramebuffers(1,&fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER,fbo);
+	unsigned int framebufferTexture;
+	glGenTextures(1,&framebufferTexture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP,framebufferTexture);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	for (int i = 0;i < 6;i++)
+	{
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,GL_RGB,2048,2048,0,GL_RGB,GL_UNSIGNED_BYTE,NULL);
+	}
+	glBindTexture(GL_TEXTURE_CUBE_MAP,0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_CUBE_MAP,framebufferTexture,0);
+
+	unsigned int rbo;
+	glGenRenderbuffers(1,&rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER,GL_DEPTH24_STENCIL8,SCR_WIDTH,SCR_HEIGHT);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER,GL_DEPTH_STENCIL_ATTACHMENT,GL_RENDERBUFFER,rbo);
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		std::cout << "error::framebuffer:: framebuffer is not complete !" << std::endl;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	//ShaderManager ourShader("vertex.vs", "fragment.fs");
-	//Model ourModel("../resource/objects/nanosuit/nanosuit.obj");
+	Model ourModel("../resource/objects/nanosuit_reflection/nanosuit.obj");
 	glEnable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	while (!glfwWindowShouldClose(pWindow))
@@ -221,14 +252,54 @@ int main()
 		lastTIme = glfwGetTime();
 		processInput(pWindow);
 
-		glClearColor(0.33f,0.33f,0.33f,1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		
-		// draw scene as normal
-		pCubeShader.use();
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = pCamera.GetLookAt();
 		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+
+		glClearColor(0.33f,0.33f,0.33f,1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//draw cube map
+		{
+			glBindFramebuffer(GL_FRAMEBUFFER,fbo);
+
+			for (int i = 0;i < 6;i++)
+			{
+				pCamera.SwitchToFace(i);
+				glFramebufferTexture2D(GL_FRAMEBUFFER,GL_COLOR_ATTACHMENT0,GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,framebufferTexture,0);
+			}
+
+			pModelShader.use();
+			model = glm::mat4(1.0f);
+			model = glm::translate(model,glm::vec3(3.0,0.0,0.0));
+			model = glm::scale(model,glm::vec3(0.2f,0.2f,0.2f));
+			pModelShader.setMat4("model", model);
+			pModelShader.setMat4("view", view);
+			pModelShader.setMat4("projection", projection);
+			pModelShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
+			pModelShader.setVec3("viewPos",pCamera.Position);
+			glActiveTexture(GL_TEXTURE4);
+			glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+			ourModel.Draw(pModelShader);
+
+			glBindVertexArray(0);
+			glDepthFunc(GL_LEQUAL);
+			pSkyShader.use();
+			view = glm::mat4(glm::mat3(pCamera.GetLookAt()));
+			pSkyShader.setMat4("view",view);
+			pSkyShader.setMat4("projection",projection);
+			glBindVertexArray(skyboxVAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_CUBE_MAP,cubemapTexture);
+			glDrawArrays(GL_TRIANGLES,0,36);
+			glDepthFunc(GL_LESS);
+		}
+		
+
+		glClearColor(0.33f,0.33f,0.33f,1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		// draw scene as normal
+		pCubeShader.use();
 		pCubeShader.setMat4("model", model);
 		pCubeShader.setMat4("view", view);
 		pCubeShader.setMat4("projection", projection);
@@ -237,9 +308,22 @@ int main()
 		// cubes
 		glBindVertexArray(cubeVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, framebufferTexture);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 		glBindVertexArray(0);
+
+		pModelShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model,glm::vec3(3.0,0.0,0.0));
+		model = glm::scale(model,glm::vec3(0.2f,0.2f,0.2f));
+		pModelShader.setMat4("model", model);
+		pModelShader.setMat4("view", view);
+		pModelShader.setMat4("projection", projection);
+		pModelShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
+		pModelShader.setVec3("viewPos",pCamera.Position);
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		ourModel.Draw(pModelShader);
 		// floor
 		//glBindVertexArray(planeVAO);
 		//glBindTexture(GL_TEXTURE_2D, floorTexture);
@@ -295,6 +379,30 @@ void processInput(GLFWwindow* pWindow)
 	if(glfwGetKey(pWindow,GLFW_KEY_D) == GLFW_TRUE)
 	{
 		pCamera.ProcessKeyboardInput(CameraMoveRight,deltaTime);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_0) == GLFW_TRUE)
+	{
+		pCamera.SwitchToFace(0);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_1) == GLFW_TRUE)
+	{
+		pCamera.SwitchToFace(1);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_2) == GLFW_TRUE)
+	{
+		pCamera.SwitchToFace(2);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_3) == GLFW_TRUE)
+	{
+		pCamera.SwitchToFace(3);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_4) == GLFW_TRUE)
+	{
+		pCamera.SwitchToFace(4);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_5) == GLFW_TRUE)
+	{
+		pCamera.SwitchToFace(5);
 	}
 }
 void mouseMove_callback(GLFWwindow* pWindow,double posx,double posy)

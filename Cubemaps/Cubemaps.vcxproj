@@ -67,6 +67,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\CameraManager.h" />
+    <ClInclude Include="..\Mesh.h" />
+    <ClInclude Include="..\Model.h" />
     <ClInclude Include="..\ShaderManager.h" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +79,8 @@
   <ItemGroup>
     <None Include="shaders\cubeFragment.fs" />
     <None Include="shaders\cubeVertex.vs" />
+    <None Include="shaders\modelFragment.fs" />
+    <None Include="shaders\modelVertex.vs" />
     <None Include="shaders\skyboxFragment.fs" />
     <None Include="shaders\skyboxVertex.vs" />
   </ItemGroup>

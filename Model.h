@@ -131,8 +131,10 @@ private:
 		textures.insert(textures.end(),specularMaps.begin(),specularMaps.end());
 		vector<Texture> normalMaps = loadMaterialTextures(mat,aiTextureType_HEIGHT,"texture_normal");
 		textures.insert(textures.end(),normalMaps.begin(),normalMaps.end());
-		vector<Texture> heightMaps = loadMaterialTextures(mat,aiTextureType_AMBIENT,"texture_height");
-		textures.insert(textures.end(),heightMaps.begin(),heightMaps.end());
+		//vector<Texture> heightMaps = loadMaterialTextures(mat,aiTextureType_AMBIENT,"texture_height");
+		//textures.insert(textures.end(),heightMaps.begin(),heightMaps.end());
+		vector<Texture> reflectMaps = loadMaterialTextures(mat,aiTextureType_AMBIENT,"texture_reflect");
+		textures.insert(textures.end(),reflectMaps.begin(),reflectMaps.end());
 		return Mesh(vertices,indices,textures);
 	}
 

@@ -162,6 +162,38 @@ public:
 			Zoom = 1.0f;
 	}
 
+	void SwitchToFace(int faceIndex)
+	{
+		switch (faceIndex)
+		{
+		case 0:
+			m_pitch = 0;
+			m_yaw = 90;
+			break;
+		case 1:
+			m_pitch = 0;
+			m_yaw = -90;
+			break;
+		case 2:
+			m_pitch = -90;
+			m_yaw = 180;
+			break;
+		case 3:
+			m_pitch = 90;
+			m_yaw = 180;
+			break;
+		case 4:
+			m_pitch = 0;
+			m_yaw = 180;
+			break;
+		case 5:
+			m_pitch = 0;
+			m_yaw = 0;
+			break;
+		}
+		updateCameraVectors();
+	}
+
 	~CameraManager(){};
 
 private:
