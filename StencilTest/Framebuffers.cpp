@@ -243,7 +243,7 @@ int main()
 		processInput(pWindow);
 
 		//first pass:render scene to frame buffer
-		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		glBindFramebuffer(GL_FRAMEBUFFER,frameBuffer);
 		// render
 		// ------
 		glEnable(GL_DEPTH_TEST);

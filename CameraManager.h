@@ -164,34 +164,34 @@ public:
 
 	void SwitchToFace(int faceIndex)
 	{
+		Position = glm::vec3(0);
 		switch (faceIndex)
 		{
-		case 0:
-			m_pitch = 0;
-			m_yaw = 90;
+		case 0://POSITIVE_X
+			m_lookPos = glm::vec3(1.0f,0.0f,0.0f);
+			m_worldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 			break;
-		case 1:
-			m_pitch = 0;
-			m_yaw = -90;
+		case 1://NEGATIVE_X
+			m_lookPos = glm::vec3(-1.0f, 0.0f, 0.0f);
+			m_worldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 			break;
-		case 2:
-			m_pitch = -90;
-			m_yaw = 180;
+		case 2://POSITIVE_Y
+			m_lookPos = glm::vec3(0.0f, 1.0f, 0.0f);
+			m_worldUp = glm::vec3(0.0f, 0.0f, 1.0f);
 			break;
-		case 3:
-			m_pitch = 90;
-			m_yaw = 180;
+		case 3://NEGATIVE_Y
+			m_lookPos = glm::vec3(0.0f, -1.0f, 0.0f);
+			m_worldUp = glm::vec3(0.0f, 0.0f, -1.0f);
 			break;
-		case 4:
-			m_pitch = 0;
-			m_yaw = 180;
+		case 4://POSITIVE_Z
+			m_lookPos = glm::vec3(0.0f, 0.0f, -1.0f);
+			m_worldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 			break;
-		case 5:
-			m_pitch = 0;
-			m_yaw = 0;
+		case 5://NEGATIVE_Z
+			m_lookPos = glm::vec3(0.0f, 0.0f, 1.0f);
+			m_worldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 			break;
 		}
-		updateCameraVectors();
 	}
 
 	~CameraManager(){};
