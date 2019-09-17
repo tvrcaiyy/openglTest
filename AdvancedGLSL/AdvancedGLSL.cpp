@@ -17,9 +17,49 @@ void mouseMove_callback(GLFWwindow* pWindow,double posx,double posy);
 void mouseScroll_callback(GLFWwindow* pWindow,double offsetx,double offsety);
 void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods);
 
-float vertices[] ={
-	-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f
+float vertices[] = {
+	// Back face
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // Bottom-left
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f,  1.0f, 0.0f, // bottom-right         
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f, // bottom-left
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+	// Front face
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+	0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+	0.5f,  0.5f,  0.5f,  1.0f, 1.0f, // top-right
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f, // top-left
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left
+	// Left face
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-left
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-left
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-right
+	// Right face
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right         
+	0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // bottom-right
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // top-left
+	0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-left     
+	// Bottom face
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+	0.5f, -0.5f, -0.5f,  1.0f, 1.0f, // top-left
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+	0.5f, -0.5f,  0.5f,  1.0f, 0.0f, // bottom-left
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f, // bottom-right
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f, // top-right
+	// Top face
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+	0.5f,  0.5f, -0.5f,  1.0f, 1.0f, // top-right     
+	0.5f,  0.5f,  0.5f,  1.0f, 0.0f, // bottom-right
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f, // top-left
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f  // bottom-left   
 };
 
 CameraManager pCamera(glm::vec3(0.0f,0.0f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f),SLG);
@@ -63,13 +103,14 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER,VBO);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(vertices),vertices,GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(GL_FLOAT),0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),0);
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindVertexArray(0);
 
 	ShaderManager pShader("../shaders/AdvancedGLSL/vertex.vs","../shaders/AdvancedGLSL/fragment.fs");
 	//glPointSize(10);
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(pWindow))
 	{
 		deltaTime = glfwGetTime() - lastTIme;
@@ -91,7 +132,7 @@ int main()
 		pShader.setMat4("view",view);
 		pShader.setMat4("projection",projection);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_POINTS,0,2);
+		glDrawArrays(GL_TRIANGLES,0,36);
 
 		glfwPollEvents();
 		glfwSwapBuffers(pWindow);
