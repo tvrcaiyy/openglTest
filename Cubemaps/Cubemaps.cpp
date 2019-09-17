@@ -19,6 +19,7 @@ void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods);
 unsigned int loadTexture(char const *path);
 unsigned int loadCubemap(vector<std::string> faces);
 
+int fps;
 float deltaTime;
 float lastTIme;
 double lastPosx = SCR_WIDTH * 0.5f;
@@ -203,6 +204,7 @@ int main()
 	faces.push_back("../resource/textures/skybox/bottom.jpg");
 	faces.push_back("../resource/textures/skybox/front.jpg");
 	faces.push_back("../resource/textures/skybox/back.jpg");
+	
 	unsigned int cubemapTexture = loadCubemap(faces);
 
 	ShaderManager pCubeShader("shaders/cubeVertex.vs", "shaders/cubeFragment.fs");
@@ -244,7 +246,7 @@ int main()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	//ShaderManager ourShader("vertex.vs", "fragment.fs");
-	//Model ourModel("../resource/objects/nanosuit_reflection/nanosuit.obj");
+	Model ourModel("../resource/objects/nanosuit_reflection/nanosuit.obj");
 	glEnable(GL_DEPTH_TEST);
 	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
 	while (!glfwWindowShouldClose(pWindow))
@@ -252,7 +254,10 @@ int main()
 		deltaTime = glfwGetTime() - lastTIme;
 		lastTIme = glfwGetTime();
 		processInput(pWindow);
-		
+		fps = (int)(1.0f / deltaTime);
+		string str = "Cube Map ! fps:" + std::to_string(fps);
+		glfwSetWindowTitle(pWindow,str.c_str());
+
 		glm::mat4 model = glm::mat4(1.0f);
 		glm::mat4 view = pEnvironmentCamera.GetLookAt();
 		glm::mat4 projection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 100.0f);
@@ -263,7 +268,7 @@ int main()
 
 			glBindFramebuffer(GL_FRAMEBUFFER,fbo);
 			glBindTexture(GL_TEXTURE_CUBE_MAP,0);
-			
+
 			for (int i = 0;i < 6;i++)
 			{
 				pEnvironmentCamera.SwitchToFace(i);
@@ -272,23 +277,24 @@ int main()
 				glClearColor(0.33f,0.33f,0.33f,1.0f);
 				glClear(GL_DEPTH_BUFFER_BIT);
 
-				//pModelShader.use();
-				//model = glm::mat4(1.0f);
-				//model = glm::translate(model,glm::vec3(3.0,0.0,0.0));
-				//model = glm::scale(model,glm::vec3(0.2f,0.2f,0.2f));
-				//pModelShader.setMat4("model", model);
-				//pModelShader.setMat4("view", view);
-				//pModelShader.setMat4("projection", projection);
-				//pModelShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
-				//pModelShader.setVec3("viewPos",pEnvironmentCamera.Position);
-				//glActiveTexture(GL_TEXTURE4);
-				//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-				//ourModel.Draw(pModelShader);
+				view = glm::mat4(glm::mat3(pEnvironmentCamera.GetLookAt()));
+
+				pModelShader.use();
+				model = glm::mat4(1.0f);
+				model = glm::translate(model,glm::vec3(glm::sin(glfwGetTime()) * 1.5f,-1.0,glm::cos(glfwGetTime()) * 1.5f));
+				model = glm::scale(model,glm::vec3(0.15f,0.15f,0.15f));
+				pModelShader.setMat4("model", model);
+				pModelShader.setMat4("view", view);
+				pModelShader.setMat4("projection", projection);
+				pModelShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
+				pModelShader.setVec3("viewPos",pEnvironmentCamera.Position);
+				glActiveTexture(GL_TEXTURE4);
+				glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+				ourModel.Draw(pModelShader);
 
 				glBindVertexArray(0);
 				glDepthFunc(GL_LEQUAL);
 				pSkyShader.use();
-				view = glm::mat4(glm::mat3(pEnvironmentCamera.GetLookAt()));
 				pSkyShader.setMat4("view",view);
 				pSkyShader.setMat4("projection",projection);
 				glBindVertexArray(skyboxVAO);
@@ -307,30 +313,31 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// draw scene as normal
 		pCubeShader.use();
+		model = glm::mat4(1.0f);
 		pCubeShader.setMat4("model", model);
 		pCubeShader.setMat4("view", view);
 		pCubeShader.setMat4("projection", objProjection);
 		pCubeShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
 		pCubeShader.setVec3("viewPos",pCamera.Position);
 		// cubes
-		//glBindVertexArray(cubeVAO);
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		//glDrawArrays(GL_TRIANGLES, 0, 36);
-		//glBindVertexArray(0);
+		glBindVertexArray(cubeVAO);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, framebufferTexture);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+		glBindVertexArray(0);
 
-		//pModelShader.use();
-		//model = glm::mat4(1.0f);
-		//model = glm::translate(model,glm::vec3(3.0,0.0,0.0));
-		//model = glm::scale(model,glm::vec3(0.2f,0.2f,0.2f));
-		//pModelShader.setMat4("model", model);
-		//pModelShader.setMat4("view", view);
-		//pModelShader.setMat4("projection", objProjection);
-		//pModelShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
-		//pModelShader.setVec3("viewPos",pCamera.Position);
-		//glActiveTexture(GL_TEXTURE4);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-		//ourModel.Draw(pModelShader);
+		pModelShader.use();
+		model = glm::mat4(1.0f);
+		model = glm::translate(model,glm::vec3(glm::sin(glfwGetTime()) * 1.5f,-1.0,glm::cos(glfwGetTime()) * 1.5f));
+		model = glm::scale(model,glm::vec3(0.15f,0.15f,0.15f));
+		pModelShader.setMat4("model", model);
+		pModelShader.setMat4("view", view);
+		pModelShader.setMat4("projection", objProjection);
+		pModelShader.setMat3("normalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
+		pModelShader.setVec3("viewPos",pCamera.Position);
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+		ourModel.Draw(pModelShader);
 
 		// floor
 		//glBindVertexArray(planeVAO);
@@ -346,7 +353,7 @@ int main()
 		pSkyShader.setMat4("projection",objProjection);
 		glBindVertexArray(skyboxVAO);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP,framebufferTexture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP,cubemapTexture);
 		glDrawArrays(GL_TRIANGLES,0,36);
 		glDepthFunc(GL_LESS);
 

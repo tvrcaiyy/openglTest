@@ -184,11 +184,11 @@ public:
 			m_worldUp = glm::vec3(0.0f, 0.0f, -1.0f);
 			break;
 		case 4://POSITIVE_Z
-			m_lookPos = glm::vec3(0.0f, 0.0f, -1.0f);
+			m_lookPos = glm::vec3(0.0f, 0.0f, 1.0f);
 			m_worldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 			break;
 		case 5://NEGATIVE_Z
-			m_lookPos = glm::vec3(0.0f, 0.0f, 1.0f);
+			m_lookPos = glm::vec3(0.0f, 0.0f, -1.0f);
 			m_worldUp = glm::vec3(0.0f, -1.0f, 0.0f);
 			break;
 		}
