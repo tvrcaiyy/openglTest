@@ -8,10 +8,14 @@ out VS_OUT
 	vec3 greenColor;
 } vs_out;
 
+layout(std140, binding = 1) uniform Matries
+{
+	mat4 view;
+	mat4 projection;	
+};
 
 uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+
 
 void main()
 {

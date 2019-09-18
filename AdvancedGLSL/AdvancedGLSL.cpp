@@ -107,7 +107,20 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindVertexArray(0);
 
+	unsigned int ubo;
+	glGenBuffers(1,&ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER,ubo);
+	glBufferData(GL_UNIFORM_BUFFER,2 * sizeof(glm::mat4),NULL,GL_STATIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER,0);
+
+
 	ShaderManager pShader("../shaders/AdvancedGLSL/vertex.vs","../shaders/AdvancedGLSL/fragment.fs");
+
+	//if glUniformBlockBinding did not call,default binding is 0
+	//unsigned int uniformIndex = glGetUniformBlockIndex(pShader.ID,"Matries");
+	//glUniformBlockBinding(pShader.ID,uniformIndex,1);
+	glBindBufferRange(GL_UNIFORM_BUFFER,1,ubo,0,2 * sizeof(glm::mat4));
+
 	//glPointSize(10);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
@@ -129,8 +142,11 @@ int main()
 		glm::mat4 view = pCamera.GetLookAt();
 		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,0.1f,100.0f);
 		pShader.setMat4("model",model);
-		pShader.setMat4("view",view);
-		pShader.setMat4("projection",projection);
+		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
+		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(view),glm::value_ptr(view));
+		glBufferSubData(GL_UNIFORM_BUFFER,sizeof(view),sizeof(projection),glm::value_ptr(projection));
+		//pShader.setMat4("view",view);
+		//pShader.setMat4("projection",projection);
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES,0,36);
 
