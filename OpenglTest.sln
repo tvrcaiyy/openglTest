@@ -29,6 +29,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Cubemaps", "Cubemaps\Cubema
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdvancedGLSL", "AdvancedGLSL\AdvancedGLSL.vcxproj", "{785293CA-4ECF-4B33-946B-1D055571E38E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryShader", "GeometryShader\GeometryShader.vcxproj", "{2823B251-380C-49DA-878C-4E2191293F99}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Instancing", "Instancing\Instancing.vcxproj", "{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -91,6 +95,14 @@ Global
 		{785293CA-4ECF-4B33-946B-1D055571E38E}.Debug|Win32.Build.0 = Debug|Win32
 		{785293CA-4ECF-4B33-946B-1D055571E38E}.Release|Win32.ActiveCfg = Release|Win32
 		{785293CA-4ECF-4B33-946B-1D055571E38E}.Release|Win32.Build.0 = Release|Win32
+		{2823B251-380C-49DA-878C-4E2191293F99}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2823B251-380C-49DA-878C-4E2191293F99}.Debug|Win32.Build.0 = Debug|Win32
+		{2823B251-380C-49DA-878C-4E2191293F99}.Release|Win32.ActiveCfg = Release|Win32
+		{2823B251-380C-49DA-878C-4E2191293F99}.Release|Win32.Build.0 = Release|Win32
+		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Debug|Win32.Build.0 = Debug|Win32
+		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Release|Win32.ActiveCfg = Release|Win32
+		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

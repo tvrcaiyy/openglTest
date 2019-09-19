@@ -113,8 +113,10 @@ int main()
 	glBufferData(GL_UNIFORM_BUFFER,2 * sizeof(glm::mat4),NULL,GL_STATIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER,0);
 
-
-	ShaderManager pShader("../shaders/AdvancedGLSL/vertex.vs","../shaders/AdvancedGLSL/fragment.fs");
+	ShaderManager pRedShader("../shaders/AdvancedGLSL/redVertex.vs","../shaders/AdvancedGLSL/fragment.fs");
+	ShaderManager pGreenShader("../shaders/AdvancedGLSL/greenVertex.vs","../shaders/AdvancedGLSL/fragment.fs");
+	ShaderManager pBlueShader("../shaders/AdvancedGLSL/blueVertex.vs","../shaders/AdvancedGLSL/fragment.fs");
+	ShaderManager pYellowShader("../shaders/AdvancedGLSL/yellowVertex.vs","../shaders/AdvancedGLSL/fragment.fs");
 
 	//if glUniformBlockBinding did not call,default binding is 0
 	//unsigned int uniformIndex = glGetUniformBlockIndex(pShader.ID,"Matries");
@@ -137,17 +139,38 @@ int main()
 
 		glClearColor(0.33f,0.33f,0.33f,1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		pShader.use();
-		glm::mat4 model(1.0);
+
 		glm::mat4 view = pCamera.GetLookAt();
 		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,0.1f,100.0f);
-		pShader.setMat4("model",model);
 		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
-		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(view),glm::value_ptr(view));
-		glBufferSubData(GL_UNIFORM_BUFFER,sizeof(view),sizeof(projection),glm::value_ptr(projection));
+		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
+		glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
+		glBindVertexArray(VAO);
+
+		pRedShader.use();
+		glm::mat4 model(1.0);
+		model = glm::translate(model,glm::vec3(-0.75f, 0.75f, 0.0f));
+		pRedShader.setMat4("model",model);
 		//pShader.setMat4("view",view);
 		//pShader.setMat4("projection",projection);
-		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES,0,36);
+
+		pGreenShader.use();
+		model = glm::mat4(1.0);
+		model = glm::translate(model,glm::vec3(0.75f, 0.75f, 0.0f));
+		pGreenShader.setMat4("model",model);
+		glDrawArrays(GL_TRIANGLES,0,36);
+
+		pBlueShader.use();
+		model = glm::mat4(1.0);
+		model = glm::translate(model,glm::vec3(-0.75f, -0.75f, 0.0f));
+		pBlueShader.setMat4("model",model);
+		glDrawArrays(GL_TRIANGLES,0,36);
+
+		pYellowShader.use();
+		model = glm::mat4(1.0);
+		model = glm::translate(model,glm::vec3(0.75f, -0.75f, 0.0f));
+		pYellowShader.setMat4("model",model);
 		glDrawArrays(GL_TRIANGLES,0,36);
 
 		glfwPollEvents();

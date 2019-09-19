@@ -40,7 +40,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\shaders\AdvancedGLSL\redVertex.vs" />
     <None Include="..\shaders\AdvancedGLSL\fragment.fs" />
-    <None Include="..\shaders\AdvancedGLSL\vertex.vs" />
+    <None Include="..\shaders\AdvancedGLSL\blueVertex.vs" />
+    <None Include="..\shaders\AdvancedGLSL\greenVertex.vs" />
+    <None Include="..\shaders\AdvancedGLSL\yellowVertex.vs" />
   </ItemGroup>
 </Project>
