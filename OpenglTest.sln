@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GeometryShader", "GeometryS
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Instancing", "Instancing\Instancing.vcxproj", "{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AntiAliasing", "AntiAliasing\AntiAliasing.vcxproj", "{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -103,6 +105,10 @@ Global
 		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Debug|Win32.Build.0 = Debug|Win32
 		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Release|Win32.ActiveCfg = Release|Win32
 		{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}.Release|Win32.Build.0 = Release|Win32
+		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Debug|Win32.ActiveCfg = Debug|Win32
+		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Debug|Win32.Build.0 = Debug|Win32
+		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Release|Win32.ActiveCfg = Release|Win32
+		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{03E2660F-9281-4EBD-A8EB-B876D18BC7CF}</ProjectGuid>
-    <RootNamespace>Instancing</RootNamespace>
+    <ProjectGuid>{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}</ProjectGuid>
+    <RootNamespace>AntiAliasing</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -50,7 +50,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\..\OpenglLibrary\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenGL32.lib;glfw3.lib;glew32s.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <DelayLoadDLLs>assimp-vc140-mt.dll</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -68,27 +67,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\utility\glad.c" />
+    <ClCompile Include="..\utility\std_image.cpp" />
+    <ClCompile Include="AntiAliasing.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\utility\CameraManager.h" />
     <ClInclude Include="..\utility\Mesh.h" />
     <ClInclude Include="..\utility\Model.h" />
     <ClInclude Include="..\utility\ShaderManager.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\utility\glad.c" />
-    <ClCompile Include="..\utility\std_image.cpp" />
-    <ClCompile Include="Instancing.cpp" />
-    <ClCompile Include="InstancingExample.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shaders\Instancing\10.3.asteroids.fs" />
-    <None Include="..\shaders\Instancing\10.3.asteroids.vs" />
-    <None Include="..\shaders\Instancing\10.3.planet.fs" />
-    <None Include="..\shaders\Instancing\10.3.planet.vs" />
-    <None Include="..\shaders\Instancing\fragment.fs" />
-    <None Include="..\shaders\Instancing\plantFragment.fs" />
-    <None Include="..\shaders\Instancing\plantVertex.vs" />
-    <None Include="..\shaders\Instancing\rockVertex.vs" />
-    <None Include="..\shaders\Instancing\vertex.vs" />
+    <None Include="..\shaders\AntiAliasing\cubeFragment.fs" />
+    <None Include="..\shaders\AntiAliasing\cubeVertex.vs" />
+    <None Include="..\shaders\AntiAliasing\frameBufferFragment.fs" />
+    <None Include="..\shaders\AntiAliasing\frameBufferVertex.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

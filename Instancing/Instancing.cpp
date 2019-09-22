@@ -32,13 +32,13 @@ float quadVertices[] = {
 
 
 
-CameraManager pCamera(glm::vec3(0.0f,0.0f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f),SLG);
+CameraManager pCamera(glm::vec3(0.0f,10.0f,100.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f),SLG);
 int fps;
 float deltaTime;
 float lastTIme;
 double lastPosx = SCR_WIDTH * 0.5f;
 double lastPosy = SCR_HEIGHT * 0.5f;
-int showType;
+int showType = 1;
 int main()
 {
 	string path = "..\\";
@@ -114,10 +114,10 @@ int main()
 	glBindBuffer(GL_UNIFORM_BUFFER,0);
 	glBindBufferRange(GL_UNIFORM_BUFFER,1,ubo,0,2 * sizeof(glm::mat4));
 	
-	int mount = 2000;
+	int mount = 100000;
 	glm::mat4* modelMatrices = new glm::mat4[mount];
-	float radius = 50.0;
-	float offset = 2.5;
+	float radius = 100;
+	float offset = 25;
 	srand(glfwGetTime());
 	for (int i = 0;i < mount;i++)
 	{
@@ -141,6 +141,11 @@ int main()
 
 		modelMatrices[i] = model;
 	}
+	unsigned int modelMatricesVBO;
+	glGenBuffers(1,&modelMatricesVBO);
+	glBindBuffer(GL_ARRAY_BUFFER,modelMatricesVBO);
+	glBufferData(GL_ARRAY_BUFFER,mount * sizeof(glm::mat4),&modelMatrices[0],GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER,0);
 
 	ShaderManager pShader("../shaders/Instancing/vertex.vs","../shaders/Instancing/fragment.fs");
 	ShaderManager pPlantShader("../shaders/Instancing/plantVertex.vs","../shaders/Instancing/plantFragment.fs");
@@ -154,6 +159,25 @@ int main()
 	Model plantModel("../resource/objects/planet/planet.obj");
 	Model rockModel("../resource/objects/rock/rock.obj");
 
+	for (int i = 0;i < rockModel.meshes.size();i++)
+	{
+		glBindVertexArray(rockModel.meshes[i].VAO);
+		glBindBuffer(GL_ARRAY_BUFFER,modelMatricesVBO);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3,4,GL_FLOAT,GL_FALSE,4*sizeof(glm::vec4),(void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4,4,GL_FLOAT,GL_FALSE,4*sizeof(glm::vec4),(void*)sizeof(glm::vec4));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5,4,GL_FLOAT,GL_FALSE,4*sizeof(glm::vec4),(void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6,4,GL_FLOAT,GL_FALSE,4*sizeof(glm::vec4),(void*)(3 * sizeof(glm::vec4)));
+		glVertexAttribDivisor(3,1);
+		glVertexAttribDivisor(4,1);
+		glVertexAttribDivisor(5,1);
+		glVertexAttribDivisor(6,1);
+		glBindBuffer(GL_ARRAY_BUFFER,0);
+		glBindVertexArray(0);
+	}
 	//glPointSize(10);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 	glEnable(GL_DEPTH_TEST);
@@ -172,7 +196,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glm::mat4 view = pCamera.GetLookAt();
-		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,0.1f,100.0f);
+		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,0.1f,1000.0f);
 		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
 		glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
@@ -188,6 +212,7 @@ int main()
 		plantModel.Draw(pPlantShader);
 
 		pRockShader.use();
+		pRockShader.setInt("type",showType);
 		if (showType == 0)
 		{
 			for (int i = 0;i < mount;i++)
@@ -195,6 +220,17 @@ int main()
 				model = modelMatrices[i];
 				pRockShader.setMat4("model",model);
 				rockModel.Draw(pRockShader);
+			}
+		}
+		else if(showType == 1)
+		{
+			pRockShader.setInt("texture_diffuse1", 0);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, rockModel.textures_loaded[0].id);
+			for (int i = 0;i < rockModel.meshes.size();i++)
+			{
+				glBindVertexArray(rockModel.meshes[i].VAO);
+				glDrawElementsInstanced(GL_TRIANGLES,rockModel.meshes[i].indices.size(),GL_UNSIGNED_INT,0,mount);
 			}
 		}
 
