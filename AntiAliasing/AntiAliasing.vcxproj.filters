@@ -15,6 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AntiAliasing.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utility\glad.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utility\std_image.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\utility\CameraManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -29,28 +40,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\utility\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utility\std_image.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Instancing.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="InstancingExample.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shaders\Instancing\fragment.fs" />
-    <None Include="..\shaders\Instancing\vertex.vs" />
-    <None Include="..\shaders\Instancing\plantFragment.fs" />
-    <None Include="..\shaders\Instancing\plantVertex.vs" />
-    <None Include="..\shaders\Instancing\rockVertex.vs" />
-    <None Include="..\shaders\Instancing\10.3.asteroids.fs" />
-    <None Include="..\shaders\Instancing\10.3.asteroids.vs" />
-    <None Include="..\shaders\Instancing\10.3.planet.fs" />
-    <None Include="..\shaders\Instancing\10.3.planet.vs" />
+    <None Include="..\shaders\AntiAliasing\cubeFragment.fs" />
+    <None Include="..\shaders\AntiAliasing\cubeVertex.vs" />
+    <None Include="..\shaders\AntiAliasing\frameBufferFragment.fs" />
+    <None Include="..\shaders\AntiAliasing\frameBufferVertex.vs" />
   </ItemGroup>
 </Project>
