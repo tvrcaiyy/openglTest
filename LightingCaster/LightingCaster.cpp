@@ -143,7 +143,7 @@ int main()
 	// material properties
 	pShader.setInt("material.diffuse",  0);
 	pShader.setInt("material.specular", 1);
-	pShader.setFloat("material.shininess", 64.0f);
+	pShader.setFloat("material.shininess", 32.0f);
 	// light properties
 	pShader.setVec3("light.ambient", 0.1f, 0.1f, 0.1f); 
 	pShader.setVec3("light.diffuse", 0.5f, 0.5f, 0.5f);

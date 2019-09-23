@@ -35,6 +35,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Instancing", "Instancing\In
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AntiAliasing", "AntiAliasing\AntiAliasing.vcxproj", "{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdvancedLightingAndGamma", "AdvancedLightingAndGamma\AdvancedLightingAndGamma.vcxproj", "{E6C7A5AB-DDE7-4DDA-9F65-14DBAF6474DF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadow", "Shadow\Shadow.vcxproj", "{97EBCE08-EF58-4C92-BF4A-6617219FDD58}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -109,6 +113,14 @@ Global
 		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Debug|Win32.Build.0 = Debug|Win32
 		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Release|Win32.ActiveCfg = Release|Win32
 		{07DFDF6B-283C-4E43-BA31-CFCA98F3DB52}.Release|Win32.Build.0 = Release|Win32
+		{E6C7A5AB-DDE7-4DDA-9F65-14DBAF6474DF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E6C7A5AB-DDE7-4DDA-9F65-14DBAF6474DF}.Debug|Win32.Build.0 = Debug|Win32
+		{E6C7A5AB-DDE7-4DDA-9F65-14DBAF6474DF}.Release|Win32.ActiveCfg = Release|Win32
+		{E6C7A5AB-DDE7-4DDA-9F65-14DBAF6474DF}.Release|Win32.Build.0 = Release|Win32
+		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Debug|Win32.ActiveCfg = Debug|Win32
+		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Debug|Win32.Build.0 = Debug|Win32
+		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Release|Win32.ActiveCfg = Release|Win32
+		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
