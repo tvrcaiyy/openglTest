@@ -55,13 +55,13 @@ public:
 		GLint vShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vShader,1,&vShaderCode,NULL);
 		glCompileShader(vShader);
-		checkCompileErrors(vShader,"VERTEX");
+		checkCompileErrors(vShader,"VERTEX",vertexShaderPath);
 
 		const GLchar* fShaderCode = fragmentCode.c_str();
 		GLint fShader = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fShader,1,&fShaderCode,NULL);
 		glCompileShader(fShader);
-		checkCompileErrors(fShader,"FRAGMENT");
+		checkCompileErrors(fShader,"FRAGMENT",fragmentShaderPath);
 
 		GLint gShader;
 		if (geometryShaderPath != nullptr)
@@ -70,7 +70,7 @@ public:
 			gShader = glCreateShader(GL_GEOMETRY_SHADER);
 			glShaderSource(gShader,1,&gShaderCode,NULL);
 			glCompileShader(gShader);
-			checkCompileErrors(gShader,"GEOMETRY");
+			checkCompileErrors(gShader,"GEOMETRY",geometryShaderPath);
 		}
 		
 		ID = glCreateProgram();
@@ -79,7 +79,7 @@ public:
 		if (geometryShaderPath != nullptr)
 			glAttachShader(ID,gShader);
 		glLinkProgram(ID);
-		checkCompileErrors(ID,"PROGRAM");
+		checkCompileErrors(ID,"PROGRAM",vertexShaderPath);
 
 		glDeleteShader(vShader);
 		glDeleteShader(fShader);
@@ -157,7 +157,7 @@ public:
 	}
 
 private:
-	void checkCompileErrors(GLuint shader, std::string type)
+	void checkCompileErrors(GLuint shader, std::string type,std::string path)
 	{
 		GLint success;
 		GLchar infoLog[1024];
@@ -167,6 +167,7 @@ private:
 			if(!success)
 			{
 				glGetShaderInfoLog(shader, 1024, NULL, infoLog);
+				std::cout << "file:" << path << std::endl;
 				std::cout << "ERROR::SHADER_COMPILATION_ERROR of type: " << type << "\n" << infoLog << "\n -- --------------------------------------------------- -- " << std::endl;
 			}
 		}

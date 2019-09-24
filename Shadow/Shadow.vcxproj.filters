@@ -44,7 +44,7 @@
     <None Include="..\shaders\Shadow\shadowVertex.vs" />
     <None Include="..\shaders\Shadow\dirLightFragment.fs" />
     <None Include="..\shaders\Shadow\dirLightVertex.vs" />
-    <None Include="..\shaders\Shadow\frameBufferFragment.fs" />
-    <None Include="..\shaders\Shadow\frameBufferVertex.vs" />
+    <None Include="..\shaders\Shadow\screenFragment.fs" />
+    <None Include="..\shaders\Shadow\screenVertex.vs" />
   </ItemGroup>
 </Project>
