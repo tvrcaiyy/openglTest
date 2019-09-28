@@ -1,13 +1,21 @@
 #version 450 core
 
-in vec2 TexCoord;
-
+in vec2 TexCoords;
 out vec4 FragColor;
 
-uniform sampler2D screenTexture;
+uniform sampler2D texture1;
+uniform float near_plane;
+uniform float far_plane;
+
+float LinearizeDepth(float depth)
+{
+    float z = depth * 2.0 - 1.0; // Back to NDC 
+    return (2.0 * near_plane * far_plane) / (far_plane + near_plane - z * (far_plane - near_plane));
+}
 
 void main()
 {
-    float depth = texture(screenTexture,TexCoord).r;
-    FragColor = vec4(vec3(depth),1.0f);
+    float depth = texture(texture1,TexCoords).r;
+    //FragColor = vec4(vec3(LinearizeDepth(depth) / far_plane), 1.0); // perspective
+    FragColor = vec4(vec3(depth - 0.5),1.0f); // orthographic
 }

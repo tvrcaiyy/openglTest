@@ -76,6 +76,7 @@
     <ClCompile Include="..\utility\glad.c" />
     <ClCompile Include="..\utility\std_image.cpp" />
     <ClCompile Include="DirLightShadowMapping.cpp" />
+    <ClCompile Include="PointLightShadowMapping.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\Shadow\dirLightFragment.fs" />

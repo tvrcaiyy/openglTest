@@ -1,28 +1,28 @@
-#include "glad/glad.h"
-#include "GLFW/glfw3.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <stb_image.h>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "../ShaderManager.h"
 #include "../CameraManager.h"
 #include "../Model.h"
-#include "glm\gtc\matrix_transform.hpp"
-#include <string>
 
-using namespace std;
+#include <iostream>
+#include <map>
 
 void framebuffer_size_callback(GLFWwindow* pWindow, int width, int height);
-void processInput(GLFWwindow* pWindow);
-void mouseMove_callback(GLFWwindow* pWindow,double posx,double posy);
+void mouseMove_callback(GLFWwindow* pWindow, double xpos, double ypos);
 void mouseScroll_callback(GLFWwindow* pWindow, double xoffset, double yoffset);
 void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods);
+void processInput(GLFWwindow* pWindow);
 unsigned int loadTexture(const char* path,bool isGamma = false);
 void RenderScene(ShaderManager& pShader,bool drawLight);
-
+// settings
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
-
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-float lastPosx = SCR_WIDTH * 0.5f;
-float lastPosy = SCR_HEIGHT * 0.5f;
 
 float cubeVertices[] = {
 	-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f, // Bottom-left
@@ -90,40 +90,73 @@ float ScreenTextureVertices[] = {
 
 };
 glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
-unsigned int cubeVAO,planeVAO,screenVAO,lightingVAO,cubeTexture,floorTexture,shaderTexture;
+unsigned int cubeVAO,planeVAO,cubeTexture,floorTexture,shaderTexture,lightingVAO;
+// camera
 CameraManager pCamera(glm::vec3(0.0f,2.0f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f),SLG);
-GLfloat near_plane = 1.1f, far_plane = 100.0f;
-bool showShadowMapping = false;
+float lastPosx = (float)SCR_WIDTH  / 2.0;
+float lastPosy = (float)SCR_HEIGHT / 2.0;
+bool firstMouse = true;
 
+// timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+GLfloat near_plane = 0.1f, far_plane = 100.0f;
+bool showShadowMapping = false;
 int main()
 {
+	// glfw: initialize and configure
+	// ------------------------------
 	glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR,4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR,5);
-	glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
-	GLFWwindow* pWindow = glfwCreateWindow(SCR_WIDTH,SCR_HEIGHT,"Dir Light Shadow !",NULL,NULL);
-	if (!pWindow)
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_SAMPLES,4);
+
+#ifdef __APPLE__
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // uncomment this statement to fix compilation on OS X
+#endif
+
+	// glfw window creation
+	// --------------------
+	GLFWwindow* pWindow = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+	if (pWindow == NULL)
 	{
-		cout << "create window failed !" << endl;
+		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
 	}
 	glfwMakeContextCurrent(pWindow);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-	{
-		cout << "initiate glad failed !" << endl;
-		glfwTerminate();
-		return -1;
-	}
-	glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
 	glfwSetFramebufferSizeCallback(pWindow, framebuffer_size_callback);
 	glfwSetCursorPosCallback(pWindow, mouseMove_callback);
 	glfwSetScrollCallback(pWindow, mouseScroll_callback);
 	glfwSetMouseButtonCallback(pWindow,mouseButton_callback);
 
-	unsigned int cubeVBO,planeVBO,screenVBO,lightingVBO;
-	//------------------------------------------------------cubeVAO
+	// tell GLFW to capture our mouse
+	//glfwSetInputMode(pWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// glad: load all OpenGL function pointers
+	// ---------------------------------------
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		std::cout << "Failed to initialize GLAD" << std::endl;
+		return -1;
+	}
+
+	// configure global opengl state
+	// -----------------------------
+	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_CULL_FACE);
+	//glEnable(GL_MULTISAMPLE);
+	//glCullFace(GL_FRONT);
+	//glFrontFace(GL_CW);
+	// build and compile shaders
+	// -------------------------
+	ShaderManager pShader("../shaders/Shadow/dirLightVertex.vs", "../shaders/Shadow/dirLightFragment.fs");
+	ShaderManager pShadowShader("../shaders/Shadow/shadowVertex.vs", "../shaders/Shadow/shadowFragment.fs");
+	ShaderManager pScreenShader("../shaders/Shadow/screenVertex.vs", "../shaders/Shadow/screenFragment.fs");
+	// set up vertex data (and buffer(s)) and configure vertex attributes
+	// ------------------------------------------------------------------
+	unsigned int cubeVBO;
 	glGenVertexArrays(1,&cubeVAO);
 	glGenBuffers(1,&cubeVBO);
 	glBindVertexArray(cubeVAO);
@@ -137,6 +170,7 @@ int main()
 	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)(6*sizeof(GL_FLOAT)));
 	glBindVertexArray(0);
 	//------------------------------------------------------
+	unsigned int planeVBO;
 	glGenVertexArrays(1,&planeVAO);
 	glGenBuffers(1,&planeVBO);
 	glBindVertexArray(planeVAO);
@@ -149,19 +183,8 @@ int main()
 	glEnableVertexAttribArray(2);
 	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)(6*sizeof(GL_FLOAT)));
 	glBindVertexArray(0);
-	//------------------------------------------------------screenVAO
-	glGenVertexArrays(1,&screenVAO);
-	glGenBuffers(1,&screenVBO);
-	glBindVertexArray(screenVAO);
-	glBindBuffer(GL_ARRAY_BUFFER,screenVBO);
-	glBufferData(GL_ARRAY_BUFFER,sizeof(ScreenTextureVertices),ScreenTextureVertices,GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),(void*)(3 * sizeof(GL_FLOAT)));
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-	glBindVertexArray(0);
-	//------------------------------------------------------lightVAO
+	//------------------------------------------------------
+	unsigned int lightingVBO;
 	glGenVertexArrays(1,&lightingVAO);
 	glGenBuffers(1,&lightingVBO);
 	glBindVertexArray(lightingVAO);
@@ -169,7 +192,7 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)0);
-	//------------------------------------------------------frame buffer object
+	//------------------------------------------------------
 	unsigned int shaderFrameBuffer;
 	unsigned int textureSize = 1024;
 	glGenTextures(1,&shaderTexture);
@@ -189,42 +212,73 @@ int main()
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER,0);
-	//------------------------------------------------------Uniform buffer
+	//------------------------------------------------------
+	unsigned int screenVAO,screenVBO;
+	glGenVertexArrays(1,&screenVAO);
+	glGenBuffers(1,&screenVBO);
+	glBindVertexArray(screenVAO);
+	glBindBuffer(GL_ARRAY_BUFFER,screenVBO);
+	glBufferData(GL_ARRAY_BUFFER,sizeof(ScreenTextureVertices),ScreenTextureVertices,GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),(void*)(3 * sizeof(GL_FLOAT)));
+	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindVertexArray(0);
+	//------------------------------------------------------
+	cubeTexture = loadTexture("../resource/textures/container2.png",false);
+	floorTexture = loadTexture("../resource/textures/wood.png",false);
+	// shader configuration
+	// --------------------
+	pShader.use();
+	pShader.setInt("texture1", 0);
+	pShader.setInt("shadowTexture",1);
+	pShader.setFloat("material.shininess", 32.0);
+	pShader.setVec3("lightDir", lightPos);
+	pShader.setVec3("lighting.ambient", glm::vec3(0.1,0.1,0.1));
+	pShader.setVec3("lighting.diffuse", glm::vec3(0.5,0.5,0.5));
+	pShader.setVec3("lighting.specular", glm::vec3(1.0,1.0,1.0));
+	pScreenShader.setInt("textrue1",0);
+	
+	pScreenShader.setFloat("near_plane", near_plane);
+	pScreenShader.setFloat("far_plane", far_plane);
+	//------------------------------------------------------
 	unsigned int ubo;
 	glGenBuffers(1,&ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER,ubo);
 	glBufferData(GL_UNIFORM_BUFFER,sizeof(glm::mat4)*2,NULL,GL_STATIC_DRAW);
 	glBindBufferRange(GL_UNIFORM_BUFFER,0,ubo,0,sizeof(glm::mat4)*2);
 	glBindBuffer(GL_UNIFORM_BUFFER,0);
-
-	cubeTexture = loadTexture("../resource/textures/container2.png",false);
-	floorTexture = loadTexture("../resource/textures/wood.png",false);
-	ShaderManager pShader("../shaders/Shadow/dirLightVertex.vs","../shaders/Shadow/dirLightFragment.fs");
-	pShader.use();
-	pShader.setInt("texture1",0);
-	pShader.setInt("shadowTexture",1);
-	pShader.setVec3("lightPos", lightPos);
-	ShaderManager pScreenShader("../shaders/Shadow/screenVertex.vs","../shaders/Shadow/screenFragment.fs");
-	pScreenShader.use();
-	pScreenShader.setInt("screenTexture",0);
-
-	ShaderManager pShadowShader("../shaders/Shadow/shadowVertex.vs","../shaders/Shadow/shadowFragment.fs");
-
-	glEnable(GL_DEPTH_TEST);
-	while (!glfwWindowShouldClose(pWindow))
+	//------------------------------------------------------
+	//glEnable(GL_FRAMEBUFFER_SRGB);
+	//glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	// render loop
+	// -----------
+	while(!glfwWindowShouldClose(pWindow))
 	{
+		// per-frame time logic
+		// --------------------
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 		//------------------------------------------------------
+		string str = "near_plane = " + to_string(near_plane);
+		glfwSetWindowTitle(pWindow,str.c_str());
+		// input
 		processInput(pWindow);
 		//------------------------------------------------------
-		//lightPos = glm::vec3(sin(glfwGetTime()) * 7,abs(cos(glfwGetTime())) * 7,0);
-		//pShader.use();
-		//pShader.setVec3("lightPos", lightPos);
-		//------------------------------------------------------draw shadow
-		glm::mat4 view = glm::lookAt(lightPos,glm::vec3(0.0),glm::vec3(0,1.0,0));
-		glm::mat4 projection = glm::perspective(glm::radians(90.0f),1.0f,near_plane,far_plane);
+		glCullFace(GL_FRONT);
+		glm::mat4 view;
+		glm::mat4 projection;
+		lightPos = glm::vec3(sin(glfwGetTime()) * 7,abs(cos(glfwGetTime())) * 7,0);
+		pShader.use();
+		pShader.setVec3("lightPos", lightPos);
+		//first pass:shadow mapping
+		view = glm::lookAt(lightPos,glm::vec3(0.0),glm::vec3(0.0,1.0,0.0));
+		//projection = glm::ortho(-10.0,10.0,-10.0,10.0,near_plane,far_plane);
+		projection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
+		//pShadowShader.setMat4("view",view);
+		//pShadowShader.setMat4("projection",projection);
 		glm::mat4 lightSpaceMatrix = projection * view;
 		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
@@ -236,15 +290,16 @@ int main()
 		glClear(GL_DEPTH_BUFFER_BIT);
 		RenderScene(pShadowShader,false);
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
-		//------------------------------------------------------draw scene
-		glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
-		glClearColor(0.33,0.33,0.33,1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+		glCullFace(GL_BACK);
+		//------------------------------------------------------
+		//draw screen vao
 		if (showShadowMapping)
 		{
-			pScreenShader.use();
+			glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
+			glClearColor(0.1,0.1,0.1,1.0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glBindVertexArray(screenVAO);
+			pScreenShader.use();
 			glActiveTexture(GL_TEXTURE0);
 			glBindTexture(GL_TEXTURE_2D,shaderTexture);
 			glDrawArrays(GL_TRIANGLES,0,6);
@@ -252,22 +307,39 @@ int main()
 		}
 		else
 		{
+			//------------------------------------------------------
+			//draw scene
 			view = pCamera.GetLookAt();
-			projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,near_plane,far_plane);
+			projection = glm::perspective(glm::radians(pCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, near_plane, far_plane);
 			glBindBuffer(GL_UNIFORM_BUFFER,ubo);
 			glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
 			glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
 			glBindBuffer(GL_UNIFORM_BUFFER,0);
+
+			glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
+			glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			pShader.use();
 			pShader.setMat4("lightSpaceMatrix",lightSpaceMatrix);
 			RenderScene(pShader,true);
+			// -------------------------------------------------------------------------------
 		}
-		//------------------------------------------------------
-		glfwPollEvents();
+		
 		glfwSwapBuffers(pWindow);
+		glfwPollEvents();
 	}
-}
 
+	// optional: de-allocate all resources once they've outlived their purpose:
+	// ------------------------------------------------------------------------
+	glDeleteVertexArrays(1, &cubeVAO);
+	glDeleteVertexArrays(1, &planeVAO);
+	glDeleteBuffers(1, &cubeVBO);
+	glDeleteBuffers(1, &planeVBO);
+
+	glfwTerminate();
+	return 0;
+}
+//------------------------------------------------------
 void RenderScene(ShaderManager& pShader,bool drawLight)
 {
 	pShader.use();
@@ -319,13 +391,9 @@ void RenderScene(ShaderManager& pShader,bool drawLight)
 	}
 	glBindVertexArray(0);
 }
-
-void framebuffer_size_callback(GLFWwindow* pWindow, int width, int height)
-{
-	glViewport(0,0,width,height);
-}
-
-void processInput(GLFWwindow* pWindow)
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(GLFWwindow *pWindow)
 {
 	if(glfwGetKey(pWindow,GLFW_KEY_ESCAPE) == GLFW_TRUE)
 	{
@@ -352,20 +420,41 @@ void processInput(GLFWwindow* pWindow)
 	{
 		showShadowMapping = !showShadowMapping;
 	}
+	if(glfwGetKey(pWindow,GLFW_KEY_E) == GLFW_TRUE)
+	{
+		near_plane += 0.01;
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_R) == GLFW_TRUE)
+	{
+		near_plane -= 0.01;
+	}
+	
 }
 
-void mouseMove_callback(GLFWwindow* pWindow,double posx,double posy)
+// glfw: whenever the window size changed (by OS or user resize) this callback function executes
+// ---------------------------------------------------------------------------------------------
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	// make sure the viewport matches the new window dimensions; note that width and 
+	// height will be significantly larger than specified on retina displays.
+	glViewport(0, 0, width, height);
+}
+
+// glfw: whenever the mouse moves, this callback is called
+// -------------------------------------------------------
+void mouseMove_callback(GLFWwindow* window, double posx, double posy)
 {
 	pCamera.ProcessMouseMovement(posx - lastPosx,lastPosy - posy);
 	lastPosx = posx;
 	lastPosy = posy;
 }
 
-void mouseScroll_callback(GLFWwindow* pWindow, double xoffset, double yoffset)
+// glfw: whenever the mouse scroll wheel scrolls, this callback is called
+// ----------------------------------------------------------------------
+void mouseScroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	pCamera.ProcessMouseScroll(yoffset);
 }
-
 void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods)
 {
 	switch (button)
@@ -394,7 +483,8 @@ void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods)
 		break;
 	}
 }
-
+// utility function for loading a 2D texture from file
+// ---------------------------------------------------
 unsigned int loadTexture(char const *path,bool isGamma)
 {
 	unsigned int textureID;

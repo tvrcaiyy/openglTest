@@ -38,6 +38,9 @@
     <ClCompile Include="DirLightShadowMapping.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="PointLightShadowMapping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\shaders\Shadow\shadowFragment.fs" />

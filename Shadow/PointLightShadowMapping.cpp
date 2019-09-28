@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 
 void framebuffer_size_callback(GLFWwindow* pWindow, int width, int height);
 void mouseMove_callback(GLFWwindow* pWindow, double xpos, double ypos);
@@ -19,6 +20,7 @@ void mouseScroll_callback(GLFWwindow* pWindow, double xoffset, double yoffset);
 void mouseButton_callback(GLFWwindow* pWindow,int button,int action,int mods);
 void processInput(GLFWwindow* pWindow);
 unsigned int loadTexture(const char* path,bool isGamma = false);
+unsigned int loadCubemap(vector<std::string> faces);
 void RenderScene(ShaderManager& pShader,bool drawLight);
 // settings
 const unsigned int SCR_WIDTH = 1280;
@@ -89,8 +91,52 @@ float ScreenTextureVertices[] = {
 	1.0f,  1.0f, 0.0f,  1.0f, 1.0f
 
 };
+float skyboxVertices[] = {
+	// positions          
+	-1.0f,  1.0f, -1.0f,
+	-1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f, -1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+
+	-1.0f, -1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f, -1.0f,  1.0f,
+	-1.0f, -1.0f,  1.0f,
+
+	-1.0f,  1.0f, -1.0f,
+	1.0f,  1.0f, -1.0f,
+	1.0f,  1.0f,  1.0f,
+	1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f,  1.0f,
+	-1.0f,  1.0f, -1.0f,
+
+	-1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	1.0f, -1.0f, -1.0f,
+	1.0f, -1.0f, -1.0f,
+	-1.0f, -1.0f,  1.0f,
+	1.0f, -1.0f,  1.0f
+};
 glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
-unsigned int cubeVAO,planeVAO,cubeTexture,floorTexture,shaderTexture,lightingVAO;
+unsigned int cubeVAO,planeVAO,cubeTexture,floorTexture,skyboxTexture,shaderTexture,lightingVAO;
 // camera
 CameraManager pCamera(glm::vec3(0.0f,2.0f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f),SLG);
 float lastPosx = (float)SCR_WIDTH  / 2.0;
@@ -228,18 +274,18 @@ int main()
 	//------------------------------------------------------
 	cubeTexture = loadTexture("../resource/textures/container2.png",false);
 	floorTexture = loadTexture("../resource/textures/wood.png",false);
+	vector<std::string> faces;
+	faces.push_back("../resource/textures/wood.png");
+	faces.push_back("../resource/textures/wood.png");
+	faces.push_back("../resource/textures/wood.png");
+	faces.push_back("../resource/textures/wood.png");
+	faces.push_back("../resource/textures/wood.png");
+	faces.push_back("../resource/textures/wood.png");
+	skyboxTexture = loadCubemap(faces);
 	// shader configuration
 	// --------------------
-	pShader.use();
-	pShader.setInt("texture1", 0);
-	pShader.setInt("shadowTexture",1);
-	pShader.setFloat("material.shininess", 32.0);
-	pShader.setVec3("lightDir", lightPos);
-	pShader.setVec3("lighting.ambient", glm::vec3(0.1,0.1,0.1));
-	pShader.setVec3("lighting.diffuse", glm::vec3(0.5,0.5,0.5));
-	pShader.setVec3("lighting.specular", glm::vec3(1.0,1.0,1.0));
-	pScreenShader.setInt("textrue1",0);
 	
+
 	pScreenShader.setFloat("near_plane", near_plane);
 	pScreenShader.setFloat("far_plane", far_plane);
 	//------------------------------------------------------
@@ -267,64 +313,21 @@ int main()
 		// input
 		processInput(pWindow);
 		//------------------------------------------------------
-		glCullFace(GL_FRONT);
-		glm::mat4 view;
-		glm::mat4 projection;
-		lightPos = glm::vec3(sin(glfwGetTime()) * 7,abs(cos(glfwGetTime())) * 7,0);
-		pShader.use();
-		pShader.setVec3("lightPos", lightPos);
-		//first pass:shadow mapping
-		view = glm::lookAt(lightPos,glm::vec3(0.0),glm::vec3(0.0,1.0,0.0));
-		//projection = glm::ortho(-10.0,10.0,-10.0,10.0,near_plane,far_plane);
-		projection = glm::perspective(glm::radians(90.0f), 1.0f, near_plane, far_plane);
-		//pShadowShader.setMat4("view",view);
-		//pShadowShader.setMat4("projection",projection);
-		glm::mat4 lightSpaceMatrix = projection * view;
-		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
-		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
-		glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
-		glBindBuffer(GL_UNIFORM_BUFFER,0);
-
-		glBindFramebuffer(GL_FRAMEBUFFER,shaderFrameBuffer);
-		glViewport(0,0,textureSize,textureSize);
-		glClear(GL_DEPTH_BUFFER_BIT);
-		RenderScene(pShadowShader,false);
-		glBindFramebuffer(GL_FRAMEBUFFER,0);
-		glCullFace(GL_BACK);
+		
 		//------------------------------------------------------
 		//draw screen vao
 		if (showShadowMapping)
 		{
-			glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
-			glClearColor(0.1,0.1,0.1,1.0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glBindVertexArray(screenVAO);
-			pScreenShader.use();
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D,shaderTexture);
-			glDrawArrays(GL_TRIANGLES,0,6);
-			glBindVertexArray(0);
+			
 		}
 		else
 		{
 			//------------------------------------------------------
 			//draw scene
-			view = pCamera.GetLookAt();
-			projection = glm::perspective(glm::radians(pCamera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, near_plane, far_plane);
-			glBindBuffer(GL_UNIFORM_BUFFER,ubo);
-			glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
-			glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
-			glBindBuffer(GL_UNIFORM_BUFFER,0);
-
-			glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
-			glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			pShader.use();
-			pShader.setMat4("lightSpaceMatrix",lightSpaceMatrix);
-			RenderScene(pShader,true);
+			
 			// -------------------------------------------------------------------------------
 		}
-		
+
 		glfwSwapBuffers(pWindow);
 		glfwPollEvents();
 	}
@@ -428,7 +431,7 @@ void processInput(GLFWwindow *pWindow)
 	{
 		near_plane -= 0.01;
 	}
-	
+
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -529,4 +532,40 @@ unsigned int loadTexture(char const *path,bool isGamma)
 	}
 
 	return textureID;
+}
+unsigned int loadCubemap(vector<std::string> faces)
+{
+	unsigned int cubemapTexture;
+	glGenTextures(1,&cubemapTexture);
+	glBindTexture(GL_TEXTURE_CUBE_MAP,cubemapTexture);
+
+	int width,height,nrComponents;
+	for (int i = 0;i < faces.size();i++)
+	{
+		unsigned char* data = stbi_load(faces[i].c_str(),&width,&height,&nrComponents,0);
+		GLenum format;
+		if(nrComponents == 1)
+			format = GL_RED;
+		else if(nrComponents == 3)
+			format = GL_RGB;
+		else if(nrComponents == 4)
+			format = GL_RGBA;
+		if(data)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,0,format,width,height,0,format,GL_UNSIGNED_BYTE,data);
+			stbi_image_free(data);
+		}
+		else
+		{
+			std::cout << "Cubemap texture failed to load at path: " << faces[i] << std::endl;
+			stbi_image_free(data);
+		}
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_WRAP_R,GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	return cubemapTexture;
 }
