@@ -92,6 +92,8 @@ float ScreenTextureVertices[] = {
 glm::vec3 lightPos(-2.0f, 4.0f, -1.0f);
 unsigned int cubeVAO,planeVAO,screenVAO,lightingVAO,cubeTexture,floorTexture,shaderTexture;
 CameraManager pCamera(glm::vec3(0.0f,2.0f,3.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(0.0f,1.0f,0.0f),SLG);
+GLfloat near_plane = 1.1f, far_plane = 100.0f;
+bool showShadowMapping = false;
 
 int main()
 {
@@ -128,26 +130,24 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER,cubeVBO);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8 * sizeof(GL_FLOAT),0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8 * sizeof(GL_FLOAT),(void*)(sizeof(GL_FLOAT) * 3));
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)(3*sizeof(GL_FLOAT)));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8 * sizeof(GL_FLOAT),(void*)(sizeof(GL_FLOAT) * 6));
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)(6*sizeof(GL_FLOAT)));
 	glBindVertexArray(0);
-	//------------------------------------------------------planeVAO
+	//------------------------------------------------------
 	glGenVertexArrays(1,&planeVAO);
 	glGenBuffers(1,&planeVBO);
 	glBindVertexArray(planeVAO);
 	glBindBuffer(GL_ARRAY_BUFFER,planeVBO);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(planeVertices),planeVertices,GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8 * sizeof(GL_FLOAT),0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8 * sizeof(GL_FLOAT),(void*)(sizeof(GL_FLOAT) * 3));
+	glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)(3*sizeof(GL_FLOAT)));
 	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8 * sizeof(GL_FLOAT),(void*)(sizeof(GL_FLOAT) * 6));
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glVertexAttribPointer(2,2,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)(6*sizeof(GL_FLOAT)));
 	glBindVertexArray(0);
 	//------------------------------------------------------screenVAO
 	glGenVertexArrays(1,&screenVAO);
@@ -156,9 +156,9 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER,screenVBO);
 	glBufferData(GL_ARRAY_BUFFER,sizeof(ScreenTextureVertices),ScreenTextureVertices,GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5 * sizeof(GL_FLOAT),0);
+	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),0);
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5 * sizeof(GL_FLOAT),(void*)(sizeof(GL_FLOAT) * 3));
+	glVertexAttribPointer(1,2,GL_FLOAT,GL_FALSE,5*sizeof(GL_FLOAT),(void*)(3 * sizeof(GL_FLOAT)));
 	glBindBuffer(GL_ARRAY_BUFFER,0);
 	glBindVertexArray(0);
 	//------------------------------------------------------lightVAO
@@ -169,8 +169,26 @@ int main()
 	glBufferData(GL_ARRAY_BUFFER,sizeof(cubeVertices),cubeVertices,GL_STATIC_DRAW);
 	glEnableVertexAttribArray(0);
 	glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,8*sizeof(GL_FLOAT),(void*)0);
-	glBindBuffer(GL_ARRAY_BUFFER,0);
-	glBindVertexArray(0);
+	//------------------------------------------------------frame buffer object
+	unsigned int shaderFrameBuffer;
+	unsigned int textureSize = 1024;
+	glGenTextures(1,&shaderTexture);
+	glBindTexture(GL_TEXTURE_2D,shaderTexture);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_DEPTH_COMPONENT,textureSize,textureSize,0,GL_DEPTH_COMPONENT,GL_UNSIGNED_BYTE,NULL);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_BORDER);
+	GLfloat borderColor[] = { 1.0, 1.0, 1.0, 1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+	glBindTexture(GL_TEXTURE_2D,0);
+
+	glGenFramebuffers(1,&shaderFrameBuffer);
+	glBindFramebuffer(GL_FRAMEBUFFER,shaderFrameBuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER,GL_DEPTH_ATTACHMENT,GL_TEXTURE_2D,shaderTexture,0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER,0);
 	//------------------------------------------------------Uniform buffer
 	unsigned int ubo;
 	glGenBuffers(1,&ubo);
@@ -182,7 +200,15 @@ int main()
 	cubeTexture = loadTexture("../resource/textures/container2.png",false);
 	floorTexture = loadTexture("../resource/textures/wood.png",false);
 	ShaderManager pShader("../shaders/Shadow/dirLightVertex.vs","../shaders/Shadow/dirLightFragment.fs");
+	pShader.use();
 	pShader.setInt("texture1",0);
+	pShader.setInt("shadowTexture",1);
+	pShader.setVec3("lightPos", lightPos);
+	ShaderManager pScreenShader("../shaders/Shadow/screenVertex.vs","../shaders/Shadow/screenFragment.fs");
+	pScreenShader.use();
+	pScreenShader.setInt("screenTexture",0);
+
+	ShaderManager pShadowShader("../shaders/Shadow/shadowVertex.vs","../shaders/Shadow/shadowFragment.fs");
 
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(pWindow))
@@ -193,18 +219,50 @@ int main()
 		//------------------------------------------------------
 		processInput(pWindow);
 		//------------------------------------------------------
-		glm::mat4 view = pCamera.GetLookAt();
-		glm::mat4 projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,0.1f,100.0f);
+		//lightPos = glm::vec3(sin(glfwGetTime()) * 7,abs(cos(glfwGetTime())) * 7,0);
+		//pShader.use();
+		//pShader.setVec3("lightPos", lightPos);
+		//------------------------------------------------------draw shadow
+		glm::mat4 view = glm::lookAt(lightPos,glm::vec3(0.0),glm::vec3(0,1.0,0));
+		glm::mat4 projection = glm::perspective(glm::radians(90.0f),1.0f,near_plane,far_plane);
+		glm::mat4 lightSpaceMatrix = projection * view;
 		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
 		glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
 		glBindBuffer(GL_UNIFORM_BUFFER,0);
-		//------------------------------------------------------
+
+		glBindFramebuffer(GL_FRAMEBUFFER,shaderFrameBuffer);
+		glViewport(0,0,textureSize,textureSize);
+		glClear(GL_DEPTH_BUFFER_BIT);
+		RenderScene(pShadowShader,false);
+		glBindFramebuffer(GL_FRAMEBUFFER,0);
+		//------------------------------------------------------draw scene
+		glViewport(0,0,SCR_WIDTH,SCR_HEIGHT);
 		glClearColor(0.33,0.33,0.33,1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		RenderScene(pShader,true);
-
+		if (showShadowMapping)
+		{
+			pScreenShader.use();
+			glBindVertexArray(screenVAO);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D,shaderTexture);
+			glDrawArrays(GL_TRIANGLES,0,6);
+			glBindVertexArray(0);
+		}
+		else
+		{
+			view = pCamera.GetLookAt();
+			projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,near_plane,far_plane);
+			glBindBuffer(GL_UNIFORM_BUFFER,ubo);
+			glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
+			glBufferSubData(GL_UNIFORM_BUFFER,sizeof(glm::mat4),sizeof(glm::mat4),glm::value_ptr(projection));
+			glBindBuffer(GL_UNIFORM_BUFFER,0);
+			pShader.use();
+			pShader.setMat4("lightSpaceMatrix",lightSpaceMatrix);
+			RenderScene(pShader,true);
+		}
+		//------------------------------------------------------
 		glfwPollEvents();
 		glfwSwapBuffers(pWindow);
 	}
@@ -289,6 +347,10 @@ void processInput(GLFWwindow* pWindow)
 	if(glfwGetKey(pWindow,GLFW_KEY_D) == GLFW_TRUE)
 	{
 		pCamera.ProcessKeyboardInput(CameraMoveRight,deltaTime);
+	}
+	if(glfwGetKey(pWindow,GLFW_KEY_B) == GLFW_TRUE)
+	{
+		showShadowMapping = !showShadowMapping;
 	}
 }
 
