@@ -81,10 +81,19 @@
   <ItemGroup>
     <None Include="..\shaders\Shadow\dirLightFragment.fs" />
     <None Include="..\shaders\Shadow\dirLightVertex.vs" />
+    <None Include="..\shaders\Shadow\pointLightFragment.fs" />
+    <None Include="..\shaders\Shadow\pointLightVertex.vs" />
+    <None Include="..\shaders\Shadow\pointScreenFragment.fs" />
+    <None Include="..\shaders\Shadow\pointScreenVertex.vs" />
+    <None Include="..\shaders\Shadow\pointShadowFragment.fs" />
+    <None Include="..\shaders\Shadow\pointShadowGeometry.gs" />
+    <None Include="..\shaders\Shadow\pointShadowVertex.vs" />
     <None Include="..\shaders\Shadow\screenFragment.fs" />
     <None Include="..\shaders\Shadow\screenVertex.vs" />
     <None Include="..\shaders\Shadow\shadowFragment.fs" />
     <None Include="..\shaders\Shadow\shadowVertex.vs" />
+    <None Include="..\shaders\Shadow\skyboxFragment.fs" />
+    <None Include="..\shaders\Shadow\skyboxVertex.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
