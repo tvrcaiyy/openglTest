@@ -305,6 +305,7 @@ int main()
 		glm::mat4 view;
 		view = pCamera.GetLookAt();
 		projection = glm::mat4(1.0);
+		glm::mat3(glm::vec3(1.0),glm::vec3(1.0),glm::vec3(1.0));
 		projection = glm::perspective(glm::radians(pCamera.Zoom),(float)SCR_WIDTH/(float)SCR_HEIGHT,1.0f,100.0f);
 		glBindBuffer(GL_UNIFORM_BUFFER,ubo);
 		glBufferSubData(GL_UNIFORM_BUFFER,0,sizeof(glm::mat4),glm::value_ptr(view));
