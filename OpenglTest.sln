@@ -39,6 +39,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdvancedLightingAndGamma", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadow", "Shadow\Shadow.vcxproj", "{97EBCE08-EF58-4C92-BF4A-6617219FDD58}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NormalMapping", "NormalMapping\NormalMapping.vcxproj", "{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -121,6 +123,10 @@ Global
 		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Debug|Win32.Build.0 = Debug|Win32
 		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Release|Win32.ActiveCfg = Release|Win32
 		{97EBCE08-EF58-4C92-BF4A-6617219FDD58}.Release|Win32.Build.0 = Release|Win32
+		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Debug|Win32.Build.0 = Debug|Win32
+		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Release|Win32.ActiveCfg = Release|Win32
+		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
