@@ -125,7 +125,7 @@ private:
 		}
 		//textures
 		aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-		vector<Texture> diffuseMaps = loadMaterialTextures(mat,aiTextureType_DIFFUSE,"texture_diffse");
+		vector<Texture> diffuseMaps = loadMaterialTextures(mat,aiTextureType_DIFFUSE,"texture_diffuse");
 		textures.insert(textures.end(),diffuseMaps.begin(),diffuseMaps.end());
 		vector<Texture> specularMaps = loadMaterialTextures(mat,aiTextureType_SPECULAR,"texture_specular");
 		textures.insert(textures.end(),specularMaps.begin(),specularMaps.end());

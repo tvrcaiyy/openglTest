@@ -35,19 +35,16 @@
     <ClCompile Include="..\utility\std_image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NormalMapping.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ParallaxMapping.cpp">
+    <ClCompile Include="DeferredShading.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\NormalMapping\NormalMappint.fs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.vs" />
-    <None Include="..\shaders\NormalMapping\lighting.fs" />
-    <None Include="..\shaders\NormalMapping\lighting.vs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.fs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.vs" />
+    <None Include="..\shaders\DeferredShading\deferredShading.fs" />
+    <None Include="..\shaders\DeferredShading\deferredShading.vs" />
+    <None Include="..\shaders\DeferredShading\gBuffer.fs" />
+    <None Include="..\shaders\DeferredShading\gBuffer.vs" />
+    <None Include="..\shaders\DeferredShading\lighting.fs" />
+    <None Include="..\shaders\DeferredShading\lighting.vs" />
   </ItemGroup>
 </Project>

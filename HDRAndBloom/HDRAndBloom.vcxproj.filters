@@ -35,19 +35,27 @@
     <ClCompile Include="..\utility\std_image.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="NormalMapping.cpp">
+    <ClCompile Include="HDR.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ParallaxMapping.cpp">
+    <ClCompile Include="Bloom.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="bloomTest.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\NormalMapping\NormalMappint.fs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.vs" />
-    <None Include="..\shaders\NormalMapping\lighting.fs" />
-    <None Include="..\shaders\NormalMapping\lighting.vs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.fs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.vs" />
+    <None Include="..\shaders\HDR\HDR.fs" />
+    <None Include="..\shaders\HDR\HDR.vs" />
+    <None Include="..\shaders\HDR\lighting.fs" />
+    <None Include="..\shaders\HDR\lighting.vs" />
+    <None Include="..\shaders\HDR\bloom.fs" />
+    <None Include="..\shaders\HDR\bloom.vs" />
+    <None Include="..\shaders\HDR\bloomBlur.fs" />
+    <None Include="..\shaders\HDR\bloomBlur.vs" />
+    <None Include="..\shaders\HDR\bloomFinal.fs" />
+    <None Include="..\shaders\HDR\bloomFinal.vs" />
+    <None Include="..\shaders\HDR\bloomLighting.fs" />
   </ItemGroup>
 </Project>

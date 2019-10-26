@@ -39,7 +39,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AdvancedLightingAndGamma", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shadow", "Shadow\Shadow.vcxproj", "{97EBCE08-EF58-4C92-BF4A-6617219FDD58}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NormalMapping", "NormalMapping\NormalMapping.vcxproj", "{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NormalAndParallaxMapping", "NormalMapping\NormalMapping.vcxproj", "{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HDRAndBloom", "HDRAndBloom\HDRAndBloom.vcxproj", "{2D8E1290-A1C9-4405-946F-23C4BAC36618}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeferredShading", "DeferredShading\DeferredShading.vcxproj", "{A08C3A14-E15B-41B5-8D9A-8F3F9DB34D9F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SSAO", "SSAO\SSAO.vcxproj", "{0B020459-6FAA-4AC6-BC38-285E03E414CD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +133,18 @@ Global
 		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Debug|Win32.Build.0 = Debug|Win32
 		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Release|Win32.ActiveCfg = Release|Win32
 		{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}.Release|Win32.Build.0 = Release|Win32
+		{2D8E1290-A1C9-4405-946F-23C4BAC36618}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2D8E1290-A1C9-4405-946F-23C4BAC36618}.Debug|Win32.Build.0 = Debug|Win32
+		{2D8E1290-A1C9-4405-946F-23C4BAC36618}.Release|Win32.ActiveCfg = Release|Win32
+		{2D8E1290-A1C9-4405-946F-23C4BAC36618}.Release|Win32.Build.0 = Release|Win32
+		{A08C3A14-E15B-41B5-8D9A-8F3F9DB34D9F}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A08C3A14-E15B-41B5-8D9A-8F3F9DB34D9F}.Debug|Win32.Build.0 = Debug|Win32
+		{A08C3A14-E15B-41B5-8D9A-8F3F9DB34D9F}.Release|Win32.ActiveCfg = Release|Win32
+		{A08C3A14-E15B-41B5-8D9A-8F3F9DB34D9F}.Release|Win32.Build.0 = Release|Win32
+		{0B020459-6FAA-4AC6-BC38-285E03E414CD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0B020459-6FAA-4AC6-BC38-285E03E414CD}.Debug|Win32.Build.0 = Debug|Win32
+		{0B020459-6FAA-4AC6-BC38-285E03E414CD}.Release|Win32.ActiveCfg = Release|Win32
+		{0B020459-6FAA-4AC6-BC38-285E03E414CD}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

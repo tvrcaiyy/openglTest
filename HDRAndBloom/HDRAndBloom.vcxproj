@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}</ProjectGuid>
-    <RootNamespace>NormalMapping</RootNamespace>
-    <ProjectName>NormalAndParallaxMapping</ProjectName>
+    <ProjectGuid>{2D8E1290-A1C9-4405-946F-23C4BAC36618}</ProjectGuid>
+    <RootNamespace>HDRAndBloom</RootNamespace>
+    <ProjectName>HDRAndBloom</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -76,16 +76,22 @@
   <ItemGroup>
     <ClCompile Include="..\utility\glad.c" />
     <ClCompile Include="..\utility\std_image.cpp" />
-    <ClCompile Include="NormalMapping.cpp" />
-    <ClCompile Include="ParallaxMapping.cpp" />
+    <ClCompile Include="Bloom.cpp" />
+    <ClCompile Include="bloomTest.cpp" />
+    <ClCompile Include="HDR.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\NormalMapping\lighting.fs" />
-    <None Include="..\shaders\NormalMapping\lighting.vs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.fs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.vs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.fs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.vs" />
+    <None Include="..\shaders\HDR\bloom.fs" />
+    <None Include="..\shaders\HDR\bloom.vs" />
+    <None Include="..\shaders\HDR\bloomBlur.fs" />
+    <None Include="..\shaders\HDR\bloomBlur.vs" />
+    <None Include="..\shaders\HDR\bloomFinal.fs" />
+    <None Include="..\shaders\HDR\bloomFinal.vs" />
+    <None Include="..\shaders\HDR\bloomLighting.fs" />
+    <None Include="..\shaders\HDR\HDR.fs" />
+    <None Include="..\shaders\HDR\HDR.vs" />
+    <None Include="..\shaders\HDR\lighting.fs" />
+    <None Include="..\shaders\HDR\lighting.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

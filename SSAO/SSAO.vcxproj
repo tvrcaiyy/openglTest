@@ -11,9 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{9BBEEEA9-FEF1-416C-A638-F890F8FFBF59}</ProjectGuid>
-    <RootNamespace>NormalMapping</RootNamespace>
-    <ProjectName>NormalAndParallaxMapping</ProjectName>
+    <ProjectGuid>{0B020459-6FAA-4AC6-BC38-285E03E414CD}</ProjectGuid>
+    <RootNamespace>SSAO</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -49,8 +48,9 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>OpenGL32.lib;glfw3.lib;glew32s.lib;assimp-vc140-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <DelayLoadDLLs>assimp-vc140-mt.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <AdditionalLibraryDirectories>..\..\..\OpenglLibrary\Libs;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>OpenGL32.lib;glfw3.lib;glew32s.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -68,24 +68,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\utility\glad.c" />
+    <ClCompile Include="..\utility\std_image.cpp" />
+    <ClCompile Include="SSAO.cpp" />
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\utility\CameraManager.h" />
     <ClInclude Include="..\utility\Mesh.h" />
     <ClInclude Include="..\utility\Model.h" />
     <ClInclude Include="..\utility\ShaderManager.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\utility\glad.c" />
-    <ClCompile Include="..\utility\std_image.cpp" />
-    <ClCompile Include="NormalMapping.cpp" />
-    <ClCompile Include="ParallaxMapping.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shaders\NormalMapping\lighting.fs" />
-    <None Include="..\shaders\NormalMapping\lighting.vs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.fs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.vs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.fs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

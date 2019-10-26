@@ -15,6 +15,17 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SSAO.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utility\glad.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\utility\std_image.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
     <ClInclude Include="..\utility\CameraManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -27,27 +38,5 @@
     <ClInclude Include="..\utility\ShaderManager.h">
       <Filter>头文件</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\utility\glad.c">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\utility\std_image.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="NormalMapping.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ParallaxMapping.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\shaders\NormalMapping\NormalMappint.fs" />
-    <None Include="..\shaders\NormalMapping\NormalMappint.vs" />
-    <None Include="..\shaders\NormalMapping\lighting.fs" />
-    <None Include="..\shaders\NormalMapping\lighting.vs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.fs" />
-    <None Include="..\shaders\NormalMapping\ParallaxMapping.vs" />
   </ItemGroup>
 </Project>
