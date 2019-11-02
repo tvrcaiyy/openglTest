@@ -78,6 +78,10 @@
     <ClInclude Include="..\utility\Model.h" />
     <ClInclude Include="..\utility\ShaderManager.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shaders\SSAO\gBuffer.fs" />
+    <None Include="..\shaders\SSAO\gBuffer.vs" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

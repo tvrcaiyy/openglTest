@@ -13,6 +13,7 @@
 #include <string>
 #include <math.h>
 #include <wtypes.h>
+#include <random>
 
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
@@ -95,13 +96,19 @@ std::vector<glm::vec3> objectPositions;
 
 float exposure = 1.0f;
 unsigned int containerTexture,woodTexture;
-std::vector<glm::vec3> lightPositions;
-std::vector<glm::vec3> lightColors;
 unsigned int VAO,VBO;
 unsigned int planeVAO,planeVBO,planeEBO;
 const float linear = 0.7;
 const float quadratic = 1.8;
 int showType = 0;
+glm::vec3 lightPos = glm::vec3(2.0, 4.0, -2.0);
+glm::vec3 lightColor = glm::vec3(0.2, 0.2, 0.7);
+
+float lerp(float a, float b, float f)
+{
+	return a + f * (b - a);
+}
+
 int main()
 {
 	string path = "..\\";
@@ -133,33 +140,7 @@ int main()
 	glfwSetCursorPosCallback(pWindow,mouseMove_callback);
 	glfwSetScrollCallback(pWindow,mouseScroll_callback);
 	//------------------------------------------------------
-	//lights position
-	const unsigned int NR_LIGHTS = 32;
-	srand(13);
-	for (unsigned int i = 0; i < NR_LIGHTS; i++)
-	{
-		// calculate slightly random offsets
-		float xPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-		float yPos = ((rand() % 100) / 100.0) * 6.0 - 4.0;
-		float zPos = ((rand() % 100) / 100.0) * 6.0 - 3.0;
-		lightPositions.push_back(glm::vec3(xPos, yPos, zPos));
-		// also calculate random color
-		float rColor = ((rand() % 500) / 200.0f) + 0.5; // between 0.5 and 1.0
-		float gColor = ((rand() % 500) / 200.0f) + 0.5; // between 0.5 and 1.0
-		float bColor = ((rand() % 500) / 200.0f) + 0.5; // between 0.5 and 1.0
-		lightColors.push_back(glm::vec3(rColor, gColor, bColor));
-	}
-	// object position
 	Model nanosuit("../resource/objects/nanosuit_reflection/nanosuit.obj");
-	objectPositions.push_back(glm::vec3(-3.0,  -3.0, -3.0));
-	objectPositions.push_back(glm::vec3( 0.0,  -3.0, -3.0));
-	objectPositions.push_back(glm::vec3( 3.0,  -3.0, -3.0));
-	objectPositions.push_back(glm::vec3(-3.0,  -3.0,  0.0));
-	objectPositions.push_back(glm::vec3( 0.0,  -3.0,  0.0));
-	objectPositions.push_back(glm::vec3( 3.0,  -3.0,  0.0));
-	objectPositions.push_back(glm::vec3(-3.0,  -3.0,  3.0));
-	objectPositions.push_back(glm::vec3( 0.0,  -3.0,  3.0));
-	objectPositions.push_back(glm::vec3( 3.0,  -3.0,  3.0));
 	//------------------------------------------------------
 	glGenVertexArrays(1,&VAO);
 	glGenBuffers(1,&VBO);
@@ -240,27 +221,41 @@ int main()
 		std::cout << "Framebuffer not complete!" << std::endl;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	//------------------------------------------------------
-	ShaderManager pGBufferShader("../shaders/DeferredShading/gBuffer.vs", "../shaders/DeferredShading/gBuffer.fs");
-	pGBufferShader.use();
-
-	ShaderManager pDeferredShader("../shaders/DeferredShading/deferredShading.vs", "../shaders/DeferredShading/deferredShading.fs");
-	pDeferredShader.use();
-	pDeferredShader.setInt("positionTexture",0);
-	pDeferredShader.setInt("normalTexture",1);
-	pDeferredShader.setInt("albedospecTexture",2);
-	for (int i = 0;i < 32;i++)
+	//sample kernal
+	std::uniform_real_distribution<GLfloat> randomFloats(0.0,1.0);
+	std::default_random_engine generator;
+	std::vector<glm::vec3> ssaoKernal;
+	for (int i = 0;i < 64;i++)
 	{
-		pDeferredShader.setVec3("lights[" + to_string(i) + "].Position",lightPositions[i]);
-		pDeferredShader.setVec3("lights[" + to_string(i) + "].Color",lightColors[i]);
-		pDeferredShader.setFloat("lights[" + to_string(i) + "].Linear",linear);
-		pDeferredShader.setFloat("lights[" + to_string(i) + "].Quadratic",quadratic);
-		pDeferredShader.setFloat("lights[" + to_string(i) + "].Constant",1.0);
+		glm::vec3 sample(randomFloats(generator) * 2.0 - 1.0,randomFloats(generator) * 2.0 - 1.0,randomFloats(generator));
+		sample = glm::normalize(sample);
+		sample *= randomFloats(generator);
+		float scale = float(i) / 64.0;
+		scale = lerp(0.1,1.0,scale * scale);
 
-		const float maxBrightness = 1.0f;//std::fmaxf(std::fmaxf(lightColors[i].r, lightColors[i].g), lightColors[i].b);
-		float radius = (-linear + std::sqrt(linear * linear - 4 * quadratic * (1.0 - (256.0f / 5.0f) * maxBrightness))) / (2.0f * quadratic);
-		pDeferredShader.setFloat("lights[" + std::to_string(i) + "].Radius", radius);
+		sample *= scale;
+		ssaoKernal.push_back(sample);
 	}
-	ShaderManager pLightShader("../shaders/DeferredShading/lighting.vs", "../shaders/DeferredShading/lighting.fs");
+	//------------------------------------------------------
+	//noise Texture
+	std::vector<glm::vec3> ssaoNoise;
+	for (int i = 0;i < 16;i++)
+	{
+		glm::vec3 noise(randomFloats(generator) * 2.0 - 1.0,randomFloats(generator) * 2.0 - 1.0,0.0);
+		ssaoNoise.push_back(noise);
+	}
+	unsigned int noiseTexture;
+	glGenTextures(1,&noiseTexture);
+	glBindTexture(GL_TEXTURE_2D,noiseTexture);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB32F,4,4,0,GL_RGB,GL_FLOAT,&ssaoNoise[0]);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+	glBindTexture(GL_TEXTURE_2D,0);
+	//------------------------------------------------------
+	ShaderManager pGBufferShader("../shaders/SSAO/gBuffer.vs", "../shaders/SSAO/gBuffer.fs");
+	pGBufferShader.use();
 	//------------------------------------------------------
 	containerTexture = loadTexture("../resource/textures/container2.png",true);
 	woodTexture = loadTexture("../resource/textures/wood.png",true);
@@ -268,7 +263,7 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	while (!glfwWindowShouldClose(pWindow))
 	{
-		string str = "Deferred Shading! showType = " + to_string(showType) + " exposure = " + to_string(exposure); 
+		string str = "SSAO ! showType = " + to_string(showType) + " exposure = " + to_string(exposure); 
 		glfwSetWindowTitle(pWindow,str.c_str());
 
 		processInput(pWindow);
@@ -286,49 +281,27 @@ int main()
 		glClearColor(0.3,0.3,0.3,1.0);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		pGBufferShader.use();
-		for (int i = 0;i < objectPositions.size();i++)
-		{
-			glm::mat4 model(1.0);
-			model = glm::translate(model,objectPositions[i]);
-			model = glm::scale(model, glm::vec3(0.25f));
-			pGBufferShader.setMat4("model",model);
-			pGBufferShader.setMat3("NormalMatrix",glm::mat3(glm::transpose(glm::inverse(model))));
-			nanosuit.Draw(pGBufferShader);
-		}
+		glm::mat4 model(1.0);
+		//room cube
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0, 7.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(7.5f, 7.5f, 7.5f));
+		pGBufferShader.setMat4("model", model);
+		pGBufferShader.setInt("invertedNormals", 1); // invert normals as we're inside the cube
+		renderCube();
+		pGBufferShader.setInt("invertedNormals", 0);
+		//model on the floor
+		model = glm::mat4(1.0f);
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 5.0));
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
+		model = glm::scale(model, glm::vec3(0.5f));
+		pGBufferShader.setMat4("model", model);
+		pGBufferShader.setMat3("NormalMatrix",glm::mat3(glm::transpose(glm::inverse(view * model))));
+		nanosuit.Draw(pGBufferShader);
 		glBindFramebuffer(GL_FRAMEBUFFER,0);
 		//------------------------------------------------------
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		pDeferredShader.use();
-		pDeferredShader.setInt("showType",showType);
-		pDeferredShader.setVec3("viewPos",pCamera.Position);
-		pDeferredShader.setFloat("exposure",exposure);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D,colorBuffers[0]);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D,colorBuffers[1]);
-		glActiveTexture(GL_TEXTURE2);
-		glBindTexture(GL_TEXTURE_2D,colorBuffers[2]);
-		glBindVertexArray(planeVAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
-		//------------------------------------------------------
-		//copy content of geometry`s depth
-		glBindFramebuffer(GL_READ_FRAMEBUFFER,deferredFBO);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER,0);
-		glBlitFramebuffer(0,0,SCR_WIDTH,SCR_HEIGHT,0,0,SCR_WIDTH,SCR_HEIGHT,GL_DEPTH_BUFFER_BIT,GL_NEAREST);
-		glBindFramebuffer(GL_FRAMEBUFFER,0);
-		//------------------------------------------------------
-		//render light
-		pLightShader.use();
-		for (int i = 0;i < lightColors.size();i++)
-		{
-			pLightShader.setVec3("lightColor",lightColors[i]);
-			glm::mat4 model(1.0);
-			model = glm::translate(model,lightPositions[i]);
-			model = glm::scale(model,glm::vec3(0.125f));
-			pLightShader.setMat4("model",model);
-			renderCube();
-		}
+		
 		glfwPollEvents();
 		glfwSwapBuffers(pWindow);
 	}

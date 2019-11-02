@@ -39,4 +39,8 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\shaders\SSAO\gBuffer.fs" />
+    <None Include="..\shaders\SSAO\gBuffer.vs" />
+  </ItemGroup>
 </Project>
